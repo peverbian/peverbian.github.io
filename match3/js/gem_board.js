@@ -17,7 +17,7 @@ function gemBoard() {
 			this.gemArray[i] = [];
 			this.gemArray[i].length = 5;
 		}
-		this.nextGem.init(this.nextValue);
+		this.nextGem.init(1);
 		this.nextGem.place(2, 5);
 		this.reset();
 	}
@@ -33,11 +33,12 @@ function gemBoard() {
 		} else {
 			playing = false;
 		}
+		this.nextGem.update();
 	}
 
 	//draw the board and all gems to the screen.
 	this.draw = function() {
-		canvasContext.translate(this.x,this.y);
+//		canvasContext.translate(this.x,this.y);
 		//draw the background
 		for(var i = 0; i < this.gemArray.length; i++) {
 			for(var j = 0; j < this.gemArray[i].length; j++) {
@@ -53,7 +54,7 @@ function gemBoard() {
 			}
 		}
 		this.nextGem.draw();
-		canvasContext.translate(-this.x,-this.y);	
+//		canvasContext.translate(-this.x,-this.y);	
 		this.drawScore();
 	}
 
@@ -203,7 +204,7 @@ function gemBoard() {
 		}
 
 		//if were matching max values, blow up 3x3 on the root
-		if(matchValue >= 5) {
+		if(matchValue >= 6) {
 			this.blowUp(rootIndex);
 		} else { 
 			//make a new gem at the root with value+1
@@ -255,6 +256,27 @@ function gemBoard() {
 		return false;
 	} 
 
+	this.startDrag = function(mousePos) {
+		if(mousePos.x < 3 * GEM_W && 
+	 	   mousePos.x > 2 * GEM_W && 
+	  	   mousePos.y < 6 * GEM_H && 
+	       mousePos.y > 5 * GEM_H)  {
+			console.log("Valid Drag");
+			this.nextGem.drag(mousePos);
+		}
+	}
+
+	this.endDrag = function(mousePos) {
+		if(mousePos.x < 5 * GEM_W && 
+		   mousePos.x > 0 && 
+		   mousePos.y < 5 * GEM_H && 
+		   mousePos.y > 0)  {
+			this.placeGem(mousePos.x, mousePos.y);
+		} else {
+			this.nextGem.release(mousePos);
+		}
+	}
+
 	//empty the combination
 	this.clearCombination = function() {
 		while(this.combination[0] != null) {
@@ -263,7 +285,7 @@ function gemBoard() {
 	}
 
 	//make a new gem and get a new value for the next gem
-	this.spawnGem = function(x, y) {
+	this.placeGem = function(x, y) {
 		var index = {x: 0, y: 0};
 		index.x = Math.floor(x/GEM_W);
 		index.y = Math.floor(y/GEM_H);
@@ -274,6 +296,9 @@ function gemBoard() {
 			var nextIndex = Math.floor(Math.random() * 16);
 			this.nextValue = valuesArray[nextIndex];
 			this.nextGem.init(this.nextValue);
+			this.nextGem.place(2, 5);
+		} else {
+			this.nextGem.release();
 		}
 	}
 
@@ -286,10 +311,10 @@ function gemBoard() {
 		bottomRight.x = index.x+1;
 		bottomRight.y = index.y+1;
 		//trim to the board
-		if(topLeft.x < 0) topLeft.x = 0;
-		if(topLeft.y < 0) topLeft.y = 0;
-		if(bottomRight.x >= this.gemArray.length) bottomRight.x = this.gemArray.length-1;
-		if(bottomRight.y >= this.gemArray[0].length) bottomRight.y = this.gemArray[0].length-1;
+		if(topLeft.x < 0) { topLeft.x = 0; }
+		if(topLeft.y < 0) { topLeft.y = 0; }
+		if(bottomRight.x >= 5) { bottomRight.x = 4 };
+		if(bottomRight.y >= 5) { bottomRight.y = 4 };
 		//delete the gems in the square
 		for(var i = topLeft.x; i <= bottomRight.x; i++) {
 			for(var j = topLeft.y; j <= bottomRight.y; j++) {
@@ -299,6 +324,5 @@ function gemBoard() {
 		}
 		//bonus score
 		this.score += 50;
-
 	}
 }

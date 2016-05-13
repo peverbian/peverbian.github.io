@@ -22,16 +22,12 @@ const KEY_7 = 55;
 const KEY_8 = 56;
 const KEY_9 = 57;
 
+var mouseDragging = false;
+
 function setupInput() {
-	canvas.addEventListener('mousemove', function(evt) { var mousePos = calculateMousePos(evt);});
-	canvas.addEventListener('mousedown', function(evt) { 
-			var mousePos = calculateMousePos(evt);
-			board.spawnGem(mousePos.x, mousePos.y);
-			if(playing == false) { 
-				//board.reset();
-				playing = true; 
-			}
-		});
+	canvas.addEventListener('mousemove', drag );
+	canvas.addEventListener('mousedown', startDrag );
+	canvas.addEventListener('mouseup', endDrag ); 
 	document.addEventListener('keydown', keyPressed );
 	document.addEventListener('keyup', keyReleased );
 }
@@ -45,6 +41,37 @@ function keyPressed(evt) {
 		playing = true;
 	}
 	evt.preventDefault();
+}
+
+function drag(evt) {
+	var mousePos = calculateMousePos(evt);
+	if(mouseDragging == true) {
+		board.nextGem.drag(mousePos);
+	}
+}
+ 
+function startDrag(evt) {
+	var mousePos = calculateMousePos(evt);
+	if(mouseDragging == false) {
+	   	mouseDragging = true;
+	   	board.startDrag(mousePos);
+	}
+}
+
+function endDrag(evt) {
+	var mousePos = calculateMousePos(evt);
+	if(mouseDragging == true) {
+
+	}
+	if(mousePos.x < 5 * GEM_W && 
+	   mousePos.x > 0 && 
+	   mousePos.y < 5 * GEM_H && 
+	   mousePos.y > 0)  {
+		board.placeGem(mousePos.x, mousePos.y);
+	} else {
+		board.nextGem.release(mousePos);
+	}
+	mouseDragging = false;
 }
 
 function keyReleased(evt) {

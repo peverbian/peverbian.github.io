@@ -3,7 +3,7 @@ var gemPics = [];
 //console.log("imageloading.js");
 
 function loadImages() {
-	var imageList = [ "1.png","2.png","3.png","4.png","5.png", "6.png", "7.png"];
+	var imageList = [ "0.png","1.png","2.png","3.png","4.png","5.png", "6.png", "7.png"];
 	picsToLoad = imageList.length;
 	for(var i=0; i < imageList.length; i++) {
 		gemPics[i] = document.createElement("img");
