@@ -1,5 +1,5 @@
 
-var valuesArray = [1,1,1,1,1,2,2,2,2,3,3,3,4,4,5,5];  //used to control the frequency of each value.
+var valuesArray = [1,1,1,1,2,2,2,2,3,3,3,4,4,5,5,6,6];  //used to control the frequency of each value.
 var text = "";
 function gemBoard() {
 	this.gemArray = [];
