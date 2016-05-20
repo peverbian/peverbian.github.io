@@ -1,16 +1,15 @@
 
-const SPEED_DECAY_MULT = 0.94;
+const SPEED_DECAY_MULT = 0.99999;
 const TURN_RATE = 0.05;
 const THRUST_POWER = .15;
-const MIN_SPEED_TO_TURN = 0.5;
 
 
-function carClass() {
+
+function shipClass() {
 	this.x = 0;
 	this.y = 0;
 	this.dx = 0; //our horizontal inertia
 	this.dy = 0; //our vertical inertia
-	this.speed = 0; 
 	this.ang = 0; //where we're pointed
 	this.pic; //chich car image to use
 	this.reload; //how often we can shoot
@@ -25,6 +24,8 @@ function carClass() {
 	this.controlKeyLeft;
 	this.controlKeyShoot;
 
+	this.myShot = new shotClass();
+
 	this.setupInput = function(upKey, rightKey, leftKey, shootKey) {
 		this.controlKeyUp = upKey;
 		this.controlKeyRight = rightKey;
@@ -37,14 +38,13 @@ function carClass() {
 		this.x = canvas.width/2;
 		this.y = canvas.height/2;
 		this.ang = -Math.PI/2
-		this.speed = THRUST_POWER;
 	} // end of reset
 
 	this.update = function() {
 		if(this.keyHeld_Thrust == true) {
 			console.log("Vroom!");
-			this.dx += Math.cos(this.ang) * this.speed;
-			this.dy += Math.sin(this.ang) * this.speed;
+			this.dx += Math.cos(this.ang) * THRUST_POWER;
+			this.dy += Math.sin(this.ang) * THRUST_POWER;
 			//this.trimSpeed();
 		}
 		if(this.keyHeld_Right == true) {
@@ -53,9 +53,12 @@ function carClass() {
 		if(this.keyHeld_Left == true) {
 			this.ang += TURN_RATE;
 		}
-		if(this.keyHeld_Shoot == true) {
-		}
 		this.move();
+		this.myShot.update();
+	}
+
+	this.fireCannon = function() {
+		this.myShot.shootFrom(this);
 	}
 
 	this.trimSpeed = function() {
@@ -66,6 +69,8 @@ function carClass() {
 	}
 
 	this.move = function() {
+		this.dx *= SPEED_DECAY_MULT;
+		this.dy *= SPEED_DECAY_MULT;
 		this.x += this.dx;
 		this.y += this.dy;
 		this.handleWrap();
@@ -80,5 +85,6 @@ function carClass() {
 
 	this.draw = function() {
 		drawBitmapCenteredWithRotation(this.pic, this.x, this.y, this.ang);
+		this.myShot.draw();
 	}
 }

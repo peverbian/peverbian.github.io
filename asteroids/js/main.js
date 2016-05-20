@@ -2,7 +2,7 @@
 var canvas;
 var canvasContext;
 
-var player = new carClass();
+var player = new shipClass();
 var ufo = new ufoClass();
 var paused = false;
 window.onload = function() {

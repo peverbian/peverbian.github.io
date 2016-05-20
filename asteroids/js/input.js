@@ -48,7 +48,9 @@ function keyPressed(evt) {
 	if(evt.keyCode == KEY_1) {
 		paused = !paused;
 	}
-
+	if(evt.keyCode == player.controlKeyShoot) {
+		player.fireCannon();
+	}
 	evt.preventDefault();
 
 }
