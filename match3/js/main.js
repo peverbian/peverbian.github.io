@@ -1,17 +1,37 @@
 
 var canvas;
-var canvasContext;
-var timeBetweenSpawns = 10;
+var ctx;
+var width;
+var height;
 var sequenceCount = 0;
 var playing = true;
 var board = new gemBoard();
 
 window.onload = function() {
-	canvas = document.getElementById('gameCanvas');
-	canvasContext = canvas.getContext('2d');
+	setupCanvas();
 	colorRect(0,0,canvas.width, canvas.height, "black");
 	loadImages();
+}
 
+function setupCanvas() {
+	canvas = document.getElementById('gameCanvas');
+	ctx = canvas.getContext('2d');
+	width = window.innerWidth;
+	height = window.innerHeight;
+
+	if(width >= 600) {
+		width = 320;
+		height = 448;
+	} else if(width/5 > height/7) {
+		width = 5 * height / 7;
+	} else {
+		height = 7 * width / 5;
+	}
+	GEM_W = width/5;
+	GEM_H = height/7;
+	canvas.style.boarder = "1px solid #000";
+	canvas.width = width;
+	canvas.height = height;
 }
 
 function startGame() {

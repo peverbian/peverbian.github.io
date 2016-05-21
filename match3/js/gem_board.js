@@ -318,8 +318,10 @@ function gemBoard() {
 		//delete the gems in the square
 		for(var i = topLeft.x; i <= bottomRight.x; i++) {
 			for(var j = topLeft.y; j <= bottomRight.y; j++) {
-				this.score += this.gemArray[i][j].value;
-				delete this.gemArray[i][j];
+				if(this.gemArray[i][j] != null) {
+					this.score += this.gemArray[i][j].value;
+					delete this.gemArray[i][j];
+				}
 			}
 		}
 		//bonus score

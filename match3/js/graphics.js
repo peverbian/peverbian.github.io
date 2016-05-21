@@ -1,27 +1,34 @@
 function colorRect(x, y, width, height, drawColor) {
-	canvasContext.fillStyle = drawColor;
-	canvasContext.fillRect(x, y, width, height);
+	ctx.fillStyle = drawColor;
+	ctx.fillRect(x, y, width, height);
 }
 
 function colorCircle(x, y, radius, color) {
-	canvasContext.fillStyle = color;
-	canvasContext.beginPath();
-	canvasContext.arc(x, y, radius, 0, 2*Math.PI, true);
-	canvasContext.fill();
+	ctx.fillStyle = color;
+	ctx.beginPath();
+	ctx.arc(x, y, radius, 0, 2*Math.PI, true);
+	ctx.fill();
 }
 
 
 function drawBitmapCenteredWithRotation(useBitmap, atX, atY, withAng) {
-	canvasContext.save();
-	canvasContext.translate(atX,atY);
-	canvasContext.rotate(withAng);
-	canvasContext.drawImage(useBitmap, -useBitmap.width/2, -useBitmap.height/2);
-	canvasContext.restore();
+	ctx.save();
+	ctx.translate(atX,atY);
+	ctx.rotate(withAng);
+	ctx.drawImage(useBitmap, -useBitmap.width/2, -useBitmap.height/2);
+	ctx.restore();
 }
 
 function drawBitmap(useBitmap, atX, atY) {
-	canvasContext.save();
-	canvasContext.translate(atX,atY);
-	canvasContext.drawImage(useBitmap, 0, 0);
-	canvasContext.restore();
+	ctx.save();
+	ctx.translate(atX,atY);
+	ctx.drawImage(useBitmap, 0, 0);
+	ctx.restore();
+}
+
+function drawBitmapStretched(useBitmap, atX, atY, width, height) {
+	ctx.save();
+	ctx.translate(atX,atY);
+	ctx.drawImage(useBitmap, 0, 0, useBitmap.width, useBitmap.height, 0, 0, width, height);
+	ctx.restore();
 }

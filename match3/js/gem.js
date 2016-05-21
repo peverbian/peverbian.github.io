@@ -1,7 +1,7 @@
 //console.log("gem.js");
 
-const GEM_W = 32;
-const GEM_H = 32;
+//const GEM_W = 32;
+//const GEM_H = 32;
 const RETURN_SPEED = 5;
 
 function gemClass() {
@@ -66,7 +66,7 @@ function gemClass() {
 	}
 
 	this.draw = function() {
-		drawBitmap(this.gemPic, this.x, this.y);	
+		drawBitmapStretched(this.gemPic, this.x, this.y, GEM_W, GEM_H);	
 	}
 
 	this.drag = function(mousePos) {
