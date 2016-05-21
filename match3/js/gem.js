@@ -31,7 +31,7 @@ function gemClass() {
 	}
 
 	this.update = function() {
-		document.getElementById("debugText").innerHTML = this.x + "," + this.y;	
+		//document.getElementById("debugText").innerHTML = this.x + "," + this.y;	
 		//if the gem is not being dragged, move back.
 		if(this.dragging == false && this.home == false) {
 			console.log("Moving Back to " + this.row + "," + this.col);

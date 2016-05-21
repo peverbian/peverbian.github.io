@@ -59,7 +59,8 @@ function gemBoard() {
 	}
 
 	this.drawScore = function() {
-		document.getElementById("scoreText").innerHTML = this.score;	
+	ctx.font="20px Georgia";
+	ctx.fillText("Score: " + this.score,10, GEM_H * 5.5);
 	}
 	//checks if the board is full.
 	this.boardFull = function() {

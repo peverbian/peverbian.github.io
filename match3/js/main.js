@@ -21,14 +21,14 @@ function setupCanvas() {
 
 	if(width >= 600) {
 		width = 320;
-		height = 448;
-	} else if(width/5 > height/7) {
-		width = 5 * height / 7;
+		height = 384;
+	} else if(width/5 > height/6) {
+		width = 5 * height / 6;
 	} else {
-		height = 7 * width / 5;
+		height = 6 * width / 5;
 	}
 	GEM_W = width/5;
-	GEM_H = height/7;
+	GEM_H = height/6;
 	canvas.style.boarder = "1px solid #000";
 	canvas.width = width;
 	canvas.height = height;
