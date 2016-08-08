@@ -6,6 +6,7 @@ var height;
 var sequenceCount = 0;
 var playing = true;
 var board = new gemBoard();
+var spriteSheetIndex = 0;
 
 window.onload = function() {
 	setupCanvas();
@@ -37,6 +38,9 @@ function setupCanvas() {
 function startGame() {
 	var framesPerSecond = 30;
 	setupInput();
+	setupSprites(diceSprites, spriteSheets[0]);
+	setupSprites(plainSprites, spriteSheets[1]);
+	gemSprites = diceSprites.slice();;
 	board.init();
 	setInterval(function() {
 				updateEverything();
@@ -45,6 +49,19 @@ function startGame() {
 }
 
 function spawnGem(mousePos) {
+
+}
+
+function switchSpriteSheets() {
+	if(spriteSheetIndex == 0 ) {
+		console.log("Switching to Dice.")
+		gemSprites = diceSprites.slice();
+		spriteSheetIndex = 1;
+	} else {
+		console.log("Switching to Plain.")
+		gemSprites = plainSprites.slice();;
+		spriteSheetIndex = 0;
+	}
 
 }
 

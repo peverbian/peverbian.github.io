@@ -40,6 +40,9 @@ function keyPressed(evt) {
 		board.reset();
 		playing = true;
 	}
+	if(evt.keyCode == KEY_ENTER && playing == true) {
+		switchSpriteSheets();
+	}
 	evt.preventDefault();
 }
 

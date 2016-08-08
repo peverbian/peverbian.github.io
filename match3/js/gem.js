@@ -2,7 +2,7 @@
 
 //const GEM_W = 32;
 //const GEM_H = 32;
-const RETURN_SPEED = 5;
+const RETURN_SPEED = 15;
 
 function gemClass() {
 	this.x;
@@ -17,7 +17,7 @@ function gemClass() {
 
 	this.init = function(value) {
 		this.value = value;
-		this.gemPic = gemPics[this.value];
+		this.gemPic = gemSprites[value-1];
 		this.sequence = sequenceCount;
 		sequenceCount++;
 	}
@@ -53,20 +53,18 @@ function gemClass() {
 				console.log("Snapping to X");
 				this.x = this.row * GEM_W;
 			}
-			if(this.y != (this.row * GEM_W) && this.y <= (this.row * GEM_W)+RETURN_SPEED && this.y >= (this.row * GEM_W)-RETURN_SPEED)  {
+			if(this.y != (this.col * GEM_W) && this.y <= (this.col * GEM_W)+RETURN_SPEED && this.y >= (this.col * GEM_W)-RETURN_SPEED)  {
 				console.log("Snapping to Y");
-				this.y = this.row * GEM_W;
+				this.y = this.col * GEM_W;
 			}
-			if(this.x == this.row * GEM_W && this.y == this.row * GEM_W) {
+			if(this.x == this.row * GEM_W && this.y == this.col * GEM_W) {
 				this.home = true;
 			}
-		//if(this.x > 0) this.x--;
-		//if(this.y > 0) this.y--;
 		}
 	}
 
 	this.draw = function() {
-		drawBitmapStretched(this.gemPic, this.x, this.y, GEM_W, GEM_H);	
+		gemSprites[this.value-1].drawStretched(this.x, this.y, GEM_W, GEM_H);	
 	}
 
 	this.drag = function(mousePos) {

@@ -1,20 +1,31 @@
 var picsToLoad = 0;
-var gemPics = [];
+var spriteSheets = [];
+var plainSprites = [];
+var diceSprites = [];
 //console.log("imageloading.js");
 
 function loadImages() {
-	var imageList = [ "0.png","1.png","2.png","3.png","4.png","5.png", "6.png", "7.png"];
+	var imageList = [ "dice.png", "plain.png"]
 	picsToLoad = imageList.length;
 	for(var i=0; i < imageList.length; i++) {
-		gemPics[i] = document.createElement("img");
-		beginLoadingImage(gemPics[i], imageList[i]);
+		spriteSheets[i] = document.createElement("img");
+		beginLoadingImage(spriteSheets[i], imageList[i]);
 	}
 }
 
+function setupSprites(spriteList, spriteSheet) {
+	var numSprites = Math.floor(spriteSheet.width / spriteSheet.height);
+	var dim = spriteSheet.height;
+	console.log("Setting up " + numSprites + " sprites of size " + dim);
+	for(var i=0; i < numSprites; i++) {
+		spriteList[i] = new sprite();
+		spriteList[i].init(spriteSheet, i*dim, 0, dim, dim);
+	}
+}
 
 function beginLoadingImage(imgVar, filename) {
 	imgVar.onload = countLoadedImagesLaunchIfReady;
-//	console.log("Loading: " + filename);
+	console.log("Loading: " + filename);
 	imgVar.src = "img/"+filename;
 }
 
