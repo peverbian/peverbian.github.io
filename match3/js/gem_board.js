@@ -1,6 +1,8 @@
 
 var valuesArray = [1,1,1,1,2,2,2,2,3,3,3,4,4,5,5,6,6];  //used to control the frequency of each value.
 var text = "";
+
+const POINTS_PER_LEVEL = 100;
 function gemBoard() {
 	this.gemArray = [];
 	this.x = 0;
@@ -8,6 +10,7 @@ function gemBoard() {
 	this.nextValue = 1;
 	this.nextGem = new gemClass();
 	this.score = 0;
+	this.level = 0;
 	this.combination = [];
 
 
@@ -56,12 +59,30 @@ function gemBoard() {
 		this.nextGem.draw();
 //		canvasContext.translate(-this.x,-this.y);	
 		this.drawScore();
+		this.drawLevel();
 	}
 
 	this.drawScore = function() {
-	ctx.font="20px Georgia";
-	ctx.fillText("Score: " + this.score,10, GEM_H * 5.5);
+		ctx.fillStyle = "yellow";
+		ctx.font="20px Georgia";
+		ctx.fillText("Score: " + this.score,GEM_W/3, GEM_H * 5.5);
 	}
+
+	this.drawLevel = function() {
+		//this.score++;
+		if(this.score - ( this.level * POINTS_PER_LEVEL) >= 0) {
+			this.level ++;
+		}
+		ctx.strokeStyle = "yellow";
+		ctx.lineWidth=GEM_H/8;
+		ctx.beginPath();
+		ctx.arc(GEM_W * 4, GEM_H * 5.5, GEM_H * 0.4, 0, 2*Math.PI * (this.score % POINTS_PER_LEVEL)/POINTS_PER_LEVEL, false);
+		ctx.stroke();
+		ctx.fillStyle = "yellow";
+		ctx.font="20px Georgia";
+		ctx.fillText(this.level,GEM_W * 3.75, GEM_H * 5.6);
+	}
+
 	//checks if the board is full.
 	this.boardFull = function() {
 		var full = true;
@@ -79,6 +100,7 @@ function gemBoard() {
 	this.reset = function() {
 		this.nextValue = 1;
 		this.score = 0;
+		this.level = 0;
 		this.nextGem.init(1);
 		for(var i = 0; i < this.gemArray.length; i++) {
 			for(var j = 0; j < this.gemArray[i].length; j++) {
