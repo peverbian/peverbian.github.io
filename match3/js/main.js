@@ -7,6 +7,8 @@ var sequenceCount = 0;
 var playing = true;
 var board = new gemBoard();
 var spriteSheetIndex = 0;
+var GEM_H;
+var GEM_W;
 
 window.onload = function() {
 	setupCanvas();
@@ -40,6 +42,7 @@ function startGame() {
 	setupInput();
 	setupSprites(diceSprites, spriteSheets[0]);
 	setupSprites(plainSprites, spriteSheets[1]);
+	setupSprites(gemsSprites, spriteSheets[2]);
 	gemSprites = diceSprites.slice();;
 	board.init();
 	setInterval(function() {
@@ -57,10 +60,14 @@ function switchSpriteSheets() {
 		console.log("Switching to Dice.")
 		gemSprites = diceSprites.slice();
 		spriteSheetIndex = 1;
-	} else {
+	} else if(spriteSheetIndex == 1 ) {
 		console.log("Switching to Plain.")
 		gemSprites = plainSprites.slice();;
-		spriteSheetIndex = 0;
+		spriteSheetIndex = 2;
+	} else {
+		console.log("Switching to gems.")
+		gemSprites = gemsSprites.slice();;
+		spriteSheetIndex = 2;
 	}
 
 }

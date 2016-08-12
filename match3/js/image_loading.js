@@ -2,10 +2,11 @@ var picsToLoad = 0;
 var spriteSheets = [];
 var plainSprites = [];
 var diceSprites = [];
+var gemsSprites = [];
 //console.log("imageloading.js");
 
 function loadImages() {
-	var imageList = [ "dice.png", "plain.png"]
+	var imageList = [ "dice.png", "plain.png", "gems.png"]
 	picsToLoad = imageList.length;
 	for(var i=0; i < imageList.length; i++) {
 		spriteSheets[i] = document.createElement("img");
