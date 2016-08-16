@@ -10,6 +10,15 @@ var spriteSheetIndex = 0;
 var GEM_H;
 var GEM_W;
 
+const LOADING = 0;
+const PLAYING = 1;
+const ANIMATING = 2;
+const END = 3;
+const STARTING = 4;
+
+var GAME_STATE = LOADING;
+
+
 window.onload = function() {
 	setupCanvas();
 	colorRect(0,0,canvas.width, canvas.height, "black");

@@ -63,17 +63,7 @@ function startDrag(evt) {
 
 function endDrag(evt) {
 	var mousePos = calculateMousePos(evt);
-	if(mouseDragging == true) {
-
-	}
-	if(mousePos.x < 5 * GEM_W && 
-	   mousePos.x > 0 && 
-	   mousePos.y < 5 * GEM_H && 
-	   mousePos.y > 0)  {
-		board.placeGem(mousePos.x, mousePos.y);
-	} else {
-		board.nextGem.release(mousePos);
-	}
+	board.endDrag(mousePos);
 	mouseDragging = false;
 }
 

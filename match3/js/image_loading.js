@@ -6,7 +6,7 @@ var gemsSprites = [];
 //console.log("imageloading.js");
 
 function loadImages() {
-	var imageList = [ "dice.png", "plain.png", "gems.png"]
+	var imageList = [ "dice.png", "plain.png", "gems.png", "trash.png"]
 	picsToLoad = imageList.length;
 	for(var i=0; i < imageList.length; i++) {
 		spriteSheets[i] = document.createElement("img");

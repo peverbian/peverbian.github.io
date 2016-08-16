@@ -31,11 +31,6 @@ function gemBoard() {
 	}
 
 	this.update = function() {
-/*		for(var index = 0; index < this.gemArray.length; index++) {
-			if(this.gemArray[index] != undefined) {
-				this.gemArray[index].update();
-			}
-		}*/
 		if(this.boardFull() == false && playing == true) {
 			this.checkBoard();
 		} else {
@@ -64,15 +59,16 @@ function gemBoard() {
 				}
 			}
 		}
+//		canvasContext.translate(-this.x,-this.y);	
+		this.drawTrash();
+		this.drawScore(1,5);
+		this.drawLevel();
 		this.nextGem.draw();
 		if(this.animateArray[0] != null) {
 			for (var i = this.animateArray.length - 1; i >= 0; i--) {
 				this.animateArray[i].draw();
 			}	
 		}
-//		canvasContext.translate(-this.x,-this.y);	
-		this.drawScore();
-		this.drawLevel();
 	}
 
 	this.animate = function() {
@@ -102,10 +98,14 @@ function gemBoard() {
 		}
 	}
 
-	this.drawScore = function() {
+	this.drawTrash = function() {
+		drawBitmapStretched(spriteSheets[3], 0, 5*GEM_H, GEM_W, GEM_H);	
+	}
+
+	this.drawScore = function(x,y) {
 		ctx.fillStyle = "yellow";
-		ctx.font="20px Georgia";
-		ctx.fillText("Score: " + this.score,GEM_W/3, GEM_H * 5.5);
+		ctx.font="12px Georgia";
+		ctx.fillText("Score: " + this.score,GEM_W * (x), GEM_H * (y + 0.5));
 	}
 
 	this.drawLevel = function() {
@@ -333,14 +333,21 @@ function gemBoard() {
 	}
 
 	this.endDrag = function(mousePos) {
-		if(mousePos.x < 5 * GEM_W && 
-		   mousePos.x > 0 && 
-		   mousePos.y < 5 * GEM_H && 
-		   mousePos.y > 0)  {
-			this.placeGem(mousePos.x, mousePos.y);
+		var index = {x: 0, y: 0};
+		index.x = Math.floor(mousePos.x/GEM_W);
+		index.y = Math.floor(mousePos.y/GEM_H);
+		console.log("Releasing at " + index.x + "," + index.y);
+		if(	index.x < 5 && 
+		   	index.x >= 0 && 
+		   	index.y < 5 && 
+		   	index.y >= 0)  {
+			this.placeGem(index);
+		} else if(index.x == 0 && index.y == 5) {
+			this.getNewNextGem();
 		} else {
-			this.nextGem.release(mousePos);
+			this.nextGem.release();
 		}
+		delete index;
 	}
 
 	//empty the combination
@@ -354,21 +361,24 @@ function gemBoard() {
 	}
 
 	//make a new gem and get a new value for the next gem
-	this.placeGem = function(x, y) {
-		var index = {x: 0, y: 0};
-		index.x = Math.floor(x/GEM_W);
-		index.y = Math.floor(y/GEM_H);
+	this.placeGem = function(index) {
 		if(this.gemArray[index.x][index.y] == null) {
 			this.gemArray[index.x][index.y] = new gemClass();
 			this.gemArray[index.x][index.y].init(this.nextValue);
 			this.gemArray[index.x][index.y].place(index.x, index.y);
-			var nextIndex = Math.floor(Math.random() * valuesArray.length);
-			this.nextValue = valuesArray[nextIndex];
-			this.nextGem.init(this.nextValue);
-			this.nextGem.place(2, 5);
+			this.getNewNextGem();
+		} else if(index.x == 0 && index.y == 5) {
+			this.getNewNextGem();
 		} else {
 			this.nextGem.release();
 		}
+	}
+
+	this.getNewNextGem = function() {
+			var nextIndex = Math.floor(Math.random() * valuesArray.length);
+			this.nextValue = valuesArray[nextIndex];
+			this.nextGem.init(this.nextValue);
+			this.nextGem.place(2, 5);		
 	}
 
 	this.blowUp = function() {
