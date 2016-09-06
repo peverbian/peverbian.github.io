@@ -30,17 +30,18 @@ function setupCanvas() {
 	ctx = canvas.getContext('2d');
 	width = window.innerWidth;
 	height = window.innerHeight;
-
+	GEM_W = 64;
+	GEM_H = 64;
 	if(width >= 600) {
-		width = 320;
-		height = 384;
-	} else if(width/5 > height/6) {
-		width = 5 * height / 6;
+		width = GEM_W * 5;
+		height = GEM_H * 7;
+	} else if(width/5 > height/7) {
+		width = 5 * height / 7;
 	} else {
-		height = 6 * width / 5;
+		height = 7 * width / 5;
 	}
 	GEM_W = width/5;
-	GEM_H = height/6;
+	GEM_H = height/7;
 	canvas.style.boarder = "1px solid #000";
 	canvas.width = width;
 	canvas.height = height;
@@ -60,9 +61,6 @@ function startGame() {
 			}, 1000/framesPerSecond);
 }
 
-function spawnGem(mousePos) {
-
-}
 
 function switchSpriteSheets() {
 	if(spriteSheetIndex == 0 ) {
@@ -76,7 +74,7 @@ function switchSpriteSheets() {
 	} else {
 		console.log("Switching to gems.")
 		gemSprites = gemsSprites.slice();;
-		spriteSheetIndex = 2;
+		spriteSheetIndex = 0;
 	}
 
 }
