@@ -14,7 +14,7 @@ function gemBoard() {
 	this.level = 0; 
 	this.animating = false; // are we merging gems
 	this.matchValue = 0; // value of matched gem
-	this.chanceForDouble = 0; // chance that next gem is 2 at once.  0 = no chance, 1 = always double.
+	this.chanceForDouble = 1; // chance that next gem is 2 at once.  0 = no chance, 1 = always double.
 	this.root; //index of most recent gem in combination
 	this.orientation = 0; //0 = horizontal, 1 = vertical, used for multiple gems
 
@@ -32,7 +32,6 @@ function gemBoard() {
 	this.reset = function() {
 		this.score = 0;
 		this.level = 0;
-		this.chanceForDouble = 0;
 		delete this.nextGems;
 		this.nextGems = [];
 		this.nextGems[0] = new gemClass();
@@ -137,7 +136,6 @@ function gemBoard() {
 		//this.score++;
 		if(this.score - ( this.level * POINTS_PER_LEVEL) >= 0) {
 			this.level ++;
-			this.chanceForDouble += 0.05;
 		}
 		ctx.strokeStyle = "yellow";
 		ctx.lineWidth=GEM_H/8;
