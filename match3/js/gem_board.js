@@ -3,7 +3,7 @@ var valuesArray = [1,1,1,1,2,2,2,2,3,3,3,4,4,5,5,6,6];  //used to control the fr
 //var valuesArray = [1,1,1,1];  //used to control the frequency of each value.
 var text = "";
 const maxValue = 4;
-const pointsToNextLevel = 50;
+const POINTS_PER_LEVEL = 100;
 function gemBoard() {
 	this.gemArray = [];
 	this.animateArray = [];
@@ -12,7 +12,6 @@ function gemBoard() {
 	this.nextGems = [];
 	this.score = 0;
 	this.level = 0; 
-	this.pointsToNextLevel = 50;
 	this.animating = false; // are we merging gems
 	this.matchValue = 0; // value of matched gem
 	this.chanceForDouble = 0; // chance that next gem is 2 at once.  0 = no chance, 1 = always double.
@@ -34,7 +33,6 @@ function gemBoard() {
 		this.score = 0;
 		this.level = 0;
 		this.chanceForDouble = 0;
-		this.pointsToNextLevel = 50;
 		delete this.nextGems;
 		this.nextGems = [];
 		this.nextGems[0] = new gemClass();
@@ -63,7 +61,6 @@ function gemBoard() {
 		for (var i = this.nextGems.length - 1; i >= 0; i--) {
 			this.nextGems[i].update();
 		}
-		this.checkLevel();
 		if(this.animating) {
 			this.animate();
 		}
@@ -136,20 +133,16 @@ function gemBoard() {
 		ctx.fillText("Score: " + this.score,GEM_W * (x), GEM_H * (y + 0.5));
 	}
 
-	this.checkLevel = function() {
-		if(this.score - ( this.level * pointsToNextLevel) >= 0) {
+	this.drawLevel = function() {
+		//this.score++;
+		if(this.score - ( this.level * POINTS_PER_LEVEL) >= 0) {
 			this.level ++;
 			this.chanceForDouble += 0.05;
-			this.pointsToNextLevel += 25;
-		}		
-	}
-
-	this.drawLevel = function() {
-
+		}
 		ctx.strokeStyle = "yellow";
 		ctx.lineWidth=GEM_H/8;
 		ctx.beginPath();
-		ctx.arc(GEM_W * 4, GEM_H * 5.5, GEM_H * 0.4, 0, 2*Math.PI * (this.score % pointsToNextLevel)/pointsToNextLevel, false);
+		ctx.arc(GEM_W * 4, GEM_H * 5.5, GEM_H * 0.4, 0, 2*Math.PI * (this.score % POINTS_PER_LEVEL)/POINTS_PER_LEVEL, false);
 		ctx.stroke();
 		ctx.fillStyle = "yellow";
 		ctx.font="20px Georgia";
