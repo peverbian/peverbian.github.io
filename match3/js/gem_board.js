@@ -1,22 +1,22 @@
 
 var valuesArray = [1,1,1,1,2,2,2,2,3,3,3,4,4,5,5,6,6];  //used to control the frequency of each value.
-//var valuesArray = [1,1,1,1];  //used to control the frequency of each value.
 var text = "";
-const maxValue = 4;
+const maxValue = 6;
+
 const POINTS_PER_LEVEL = 100;
 function gemBoard() {
 	this.gemArray = [];
 	this.animateArray = [];
 	this.x = 0;
 	this.y = 0
-	this.nextGems = [];
+	this.nextValue = 1;
+	this.nextGem = new gemClass();
 	this.score = 0;
-	this.level = 0; 
-	this.animating = false; // are we merging gems
-	this.matchValue = 0; // value of matched gem
-	this.chanceForDouble = 1; // chance that next gem is 2 at once.  0 = no chance, 1 = always double.
-	this.root; //index of most recent gem in combination
-	this.orientation = 0; //0 = horizontal, 1 = vertical, used for multiple gems
+	this.level = 0;
+	this.combination = [];
+	this.root;
+	this.animating = false;
+	this.matchValue = 0;
 
 
 	this.init = function() {
@@ -25,41 +25,18 @@ function gemBoard() {
 			this.gemArray[i] = [];
 			this.gemArray[i].length = 5;
 		}
+		this.nextGem.init(1);
+		this.nextGem.place(2, 5);
 		this.reset();
 	}
 
-	//resets the board after a deadlock
-	this.reset = function() {
-		this.score = 0;
-		this.level = 0;
-		delete this.nextGems;
-		this.nextGems = [];
-		this.nextGems[0] = new gemClass();
-		this.nextGems[0].init(1);
-		this.nextGems[0].place({x:2, y:5.5});
-		for(var i = 0; i < this.gemArray.length; i++) {
-			for(var j = 0; j < this.gemArray[i].length; j++) {
-				this.gemArray[i][j] = null;		
-			}
-		}
-	}
-
 	this.update = function() {
-		if(boardFull(this.gemArray) == false && playing == true) {
-			var index = checkBoard(this.gemArray);
-			if(index.x != -1 || index.y != -1) {
-				//clearCombination(this.combination);
-				this.matchValue = this.gemArray[index.x][index.y].value;
-				var combination = getCombination(this.gemArray,index);
-				this.root = getRoot(this.gemArray, combination);
-				this.makeAnimation(combination, this.root);
-			}
+		if(this.boardFull() == false && playing == true) {
+			this.checkBoard();
 		} else {
 			playing = false;
 		}
-		for (var i = this.nextGems.length - 1; i >= 0; i--) {
-			this.nextGems[i].update();
-		}
+		this.nextGem.update();
 		if(this.animating) {
 			this.animate();
 		}
@@ -67,13 +44,13 @@ function gemBoard() {
 
 	//draw the board and all gems to the screen.
 	this.draw = function() {
+//		canvasContext.translate(this.x,this.y);
 		//draw the background
 		for(var i = 0; i < this.gemArray.length; i++) {
 			for(var j = 0; j < this.gemArray[i].length; j++) {
 				colorRect(i*GEM_W+1, j*GEM_H+1, GEM_W-2, GEM_H-2, "yellow");		
 			}
 		}
-		colorRect(GEM_W * 1.5, GEM_H * 5, GEM_W * 2, height, "gray")
 		//draw the gems
 		for(var i = 0; i < this.gemArray.length; i++) {
 			for(var j = 0; j < this.gemArray[i].length; j++) {
@@ -82,12 +59,11 @@ function gemBoard() {
 				}
 			}
 		}
+//		canvasContext.translate(-this.x,-this.y);	
 		this.drawTrash();
-		this.drawScore(3.5,6);
+		this.drawScore(1,5);
 		this.drawLevel();
-		for (var i = this.nextGems.length - 1; i >= 0; i--) {
-			this.nextGems[i].draw();
-		}
+		this.nextGem.draw();
 		if(this.animateArray[0] != null) {
 			for (var i = this.animateArray.length - 1; i >= 0; i--) {
 				this.animateArray[i].draw();
@@ -116,7 +92,7 @@ function gemBoard() {
 				//make a new gem at the root with value+1
 				this.gemArray[this.root.x][this.root.y] = new gemClass();
 				this.gemArray[this.root.x][this.root.y].init(this.matchValue+1);
-				this.gemArray[this.root.x][this.root.y].place(this.root);
+				this.gemArray[this.root.x][this.root.y].place(this.root.x, this.root.y);
 			}
 			this.animating = false;
 		}
@@ -147,18 +123,204 @@ function gemBoard() {
 		ctx.fillText(this.level,GEM_W * 3.9, GEM_H * 5.55);
 	}
 
+	//checks if the board is full.
+	this.boardFull = function() {
+		var full = true;
+		for(var i = 0; i < this.gemArray.length; i++) {
+			for(var j = 0; j < this.gemArray[i].length; j++) {
+				if(this.gemArray[i][j] == null) {
+					full = false;
+				}
+			}
+		}
+		return full;
+	}
 
+	//resets the board after a deadlock
+	this.reset = function() {
+		this.nextValue = 1;
+		this.score = 0;
+		this.level = 0;
+		this.nextGem.init(1);
+		for(var i = 0; i < this.gemArray.length; i++) {
+			for(var j = 0; j < this.gemArray[i].length; j++) {
+				this.gemArray[i][j] = null;		
+			}
+		}
+	}
 
+	//check if there's a match of 3 - found by the middle one and returned.
+	this.checkBoard = function() {
+		var value = 0;
+		var count = 0;
+		for(var i = 0; i < this.gemArray.length; i++) {
+			for(var j = 0; j < this.gemArray[i].length; j++) {
+				count = 0;
+				if(this.gemArray[i][j] != null) {
+					if(i > 0) {
+						if(this.gemArray[i-1][j] != null) {
+							if(this.gemArray[i-1][j].value == this.gemArray[i][j].value) {
+								count++
+							}
+						}
+					}
+					if(i < this.gemArray.length-1) {
+						if(this.gemArray[i+1][j] != null) {
+							if(this.gemArray[i+1][j].value == this.gemArray[i][j].value) {
+								count++
+							}
+						}
+					}
+					if(j > 0) {
+						if(this.gemArray[i][j-1] != null) {
+							if(this.gemArray[i][j-1].value == this.gemArray[i][j].value) {
+								count++
+							}
+						}
+					}
+					if(j < this.gemArray[i].length-1) {
+						if(this.gemArray[i][j+1] != null) {
+							if(this.gemArray[i][j+1].value == this.gemArray[i][j].value) {
+								count++
+							}
+						}
+					}
+				}
+				if(count >= 2) {
+					this.combineGems(i,j);
+				}
+			}
+		}
+		return -1;
+	}
 
-	this.makeAnimation = function(combination) {
-		for(var i = 0; i < combination.length; i++) {
-			this.score += this.gemArray[combination[i].x][combination[i].y].value;
-			this.animateArray[i] = this.gemArray[combination[i].x][combination[i].y];
+	//combine all the gems that are connected to the given index
+	this.combineGems = function(x,y) {
+		this.clearCombination();
+		this.combination.push({x: x, y: y});
+		this.matchValue = this.gemArray[x][y].value;
+		var combinedAll = false;
+		var tempIndex = {x: 0, y: 0};
+		var combinationIndex = 1;
+		//getcombination
+		while(combinedAll == false) {
+			//go through the combination and get neighbors that match
+			combinedAll = true;
+			var length = this.combination.length;
+			for(var i = 0; i < length; i++) {
+				//check right for a match
+				tempIndex.x = this.combination[i].x + 1;
+				tempIndex.y = this.combination[i].y;
+				if(this.checkIndex(this.matchValue, tempIndex) == true) {
+					this.combination[combinationIndex] = {x: 0, y: 0};
+					this.combination[combinationIndex].x = tempIndex.x;
+					this.combination[combinationIndex].y = tempIndex.y;
+					combinationIndex++;
+					combinedAll = false;
+				}
+
+				//check left for a match
+				tempIndex.x = this.combination[i].x - 1;
+				tempIndex.y = this.combination[i].y;
+				if(this.checkIndex(this.matchValue, tempIndex) == true) {
+					this.combination[combinationIndex] = {x: 0, y: 0};
+					this.combination[combinationIndex].x = tempIndex.x;
+					this.combination[combinationIndex].y = tempIndex.y;
+					combinationIndex++;
+					combinedAll = false;
+				}
+
+				//check up for a match
+				tempIndex.x = this.combination[i].x;
+				tempIndex.y = this.combination[i].y - 1;
+				if(this.checkIndex(this.matchValue, tempIndex) == true) {
+					this.combination[combinationIndex] = {x: 0, y: 0};
+					this.combination[combinationIndex].x = tempIndex.x;
+					this.combination[combinationIndex].y = tempIndex.y;
+					combinationIndex++;
+					combinedAll = false;
+				}
+				
+				
+				//check down for a match
+				tempIndex.x = this.combination[i].x;
+				tempIndex.y = this.combination[i].y + 1;
+				if(this.checkIndex(this.matchValue, tempIndex) == true) {
+					this.combination[combinationIndex] = {x: 0, y: 0};
+					this.combination[combinationIndex].x = tempIndex.x;
+					this.combination[combinationIndex].y = tempIndex.y;
+					combinationIndex++;
+					combinedAll = false;
+				}
+				
+			}
+		} //end get combination
+
+		//get the newest gem to upgrade;
+		this.root = this.getRoot();
+		this.makeAnimation();
+
+		//move the gemes to the animate array, grab the score from the gem and delete the gem from the board.
+		for(var i = 0; i < this.combination.length; i++) {
+			this.score += this.gemArray[this.combination[i].x][this.combination[i].y].value;
+			this.gemArray[this.combination[i].x][this.combination[i].y] = null;
+		}
+
+		//if were matching max values, blow up 3x3 on the root
+
+		//update score
+	}
+
+	this.makeAnimation = function() {
+		for(var i = 0; i < this.combination.length; i++) {
+			this.animateArray[i] = this.gemArray[this.combination[i].x][this.combination[i].y];
 			this.animateArray[i].moveTo(this.root.x, this.root.y);
-			this.gemArray[combination[i].x][combination[i].y] = null;
 		}
 		this.animating = true;
 	}
+
+
+
+	//get the most recent gem in the combination of gems
+	this.getRoot = function() {
+		var rIndex = {x:0, y:0};
+		rIndex.x = this.combination[0].x;
+		rIndex.y = this.combination[0].y;
+		for(var i = 1; i < this.combination.length; i++) {
+			if(this.gemArray[this.combination[i].x][this.combination[i].y].sequence >= this.gemArray[rIndex.x][rIndex.y].sequence) {
+				rIndex.x = this.combination[i].x;
+				rIndex.y = this.combination[i].y;
+			}
+		}
+		return rIndex;	
+	}
+
+	//check if the given index is already part of the match
+	this.isIndexInCombination = function(index) {
+		//check if index is already in the combination
+		for(var j = 0; j < this.combination.length; j++) {
+			if(this.combination[j].x == index.x && this.combination[j].y == index.y) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	//check if the given index is in bounds and matches the value
+	this.checkIndex = function(value, index) {
+		if(index.x >= 0 && 
+		   index.x < this.gemArray.length &&
+		   index.y >= 0 && 
+		   index.y < this.gemArray[0].length &&
+		   this.isIndexInCombination(index) == false) {
+			if(this.gemArray[index.x][index.y] != null) {
+				if(this.gemArray[index.x][index.y].value == value) {
+					return true;
+				}
+			}
+		}
+		return false;
+	} 
 
 	this.startDrag = function(mousePos) {
 		if(mousePos.x < 3 * GEM_W && 
@@ -166,7 +328,7 @@ function gemBoard() {
 	  	   mousePos.y < 6 * GEM_H && 
 	       mousePos.y > 5 * GEM_H)  {
 			console.log("Valid Drag");
-			this.drag(mousePos);
+			this.nextGem.drag(mousePos);
 		}
 	}
 
@@ -175,159 +337,51 @@ function gemBoard() {
 		index.x = Math.floor(mousePos.x/GEM_W);
 		index.y = Math.floor(mousePos.y/GEM_H);
 		console.log("Releasing at " + index.x + "," + index.y);
-		if(this.onTrash(index) ) {
-			console.log("On Trash");
-			this.getNewNextGem();
-		} else if(this.onHome(mousePos) && this.nextGems.length > 1) {
-			if(this.orientation == 0) {
-				this.orientation = 1;
-				for (var i = this.nextGems.length - 1; i >= 0; i--) {
-					this.nextGems[i].place({x:2, y:5 + i});
-				}
-			} else {
-				this.orientation = 0;
-				this.swapGems();
-				for (var i = this.nextGems.length - 1; i >= 0; i--) {
-					this.nextGems[i].place({x:i+this.nextGems.length-0.5, y:5.5});
-				}
-			}
-		} else {
-			var canPlaceAll = true;
-			for (var i = this.nextGems.length - 1; i >= 0; i--) {
-				if(this.testPlaceGem(this.nextGems[i].getIndex()) == false) {
-					canPlaceAll = false;
-				}
-			}
-			if(canPlaceAll == true) {
-				for (var i = this.nextGems.length - 1; i >= 0; i--) {
-					var placingIndex = this.nextGems[i].getIndex();
-					this.gemArray[placingIndex.x][placingIndex.y] = new gemClass();
-					this.gemArray[placingIndex.x][placingIndex.y].init(this.nextGems[i].getValue());
-					this.gemArray[placingIndex.x][placingIndex.y].place(placingIndex);
-				}
-				this.getNewNextGem();
-			} else {
-				for (var i = this.nextGems.length - 1; i >= 0; i--) {
-					this.nextGems[i].release();
-				}
-			}
-		}
-	}
-
-	this.drag = function(mousePos)  {
-		var gemPos = {x: 0, y: 0};
-		if(this.nextGems.length == 1) {
-			gemPos.x = mousePos.x - (GEM_W/2);
-			gemPos.y = mousePos.y - (GEM_H/2);
-			this.nextGems[0].drag(gemPos);
-		} else {
-			if(this.orientation == 0) {
-				for (var i = this.nextGems.length - 1; i >= 0; i--) {   
-					gemPos.x = mousePos.x - GEM_W + (GEM_W * i);
-					gemPos.y = mousePos.y - (GEM_H/2);
-					this.nextGems[i].drag(gemPos);	
-				}
-			} else {
-				for (var i = this.nextGems.length - 1; i >= 0; i--) {   
-					gemPos.x = mousePos.x - GEM_W/2;
-					gemPos.y = mousePos.y - GEM_H + (GEM_H * i);
-					this.nextGems[i].drag(gemPos);	
-				}
-			}	
-		}
-	}
-
-	this.releaseGems = function() {
-		for (var i = this.nextGems.length - 1; i >= 0; i--) {
-			this.nextGems[i].release();
-		}
-	}
-	this.swapGems = function() {
-		console.log("Swapping Gems");
-		var tempGem = this.nextGems[0];
-		this.nextGems[0] = this.nextGems[1];
-		this.nextGems[1] = tempGem;	
-	}
-
-	//is this on the board?
-	this.onBoard = function(index) {
 		if(	index.x < 5 && 
 		   	index.x >= 0 && 
 		   	index.y < 5 && 
 		   	index.y >= 0)  {
-			return true;
-			}
-		return false;
+			this.placeGem(index);
+		} else if(index.x == 0 && index.y == 5) {
+			this.getNewNextGem();
+		} else {
+			this.nextGem.release();
+		}
+		delete index;
 	}
 
-	//is this over the trash icon?
-	this.onTrash = function(index) {
-		if(index.x == 0 && index.y == 5) {
-			return true;
+	//empty the combination
+	this.clearCombination = function() {
+		var tempGem;
+		while(this.combination[0] != null) {
+			tempGem = this.combination.pop();
+			delete tempGem;
 		}
-		return false;
-	}
-
-	this.onHome = function(mousePos) {
-		var indexX = mousePos.x/GEM_W;
-		var indexY = mousePos.y/GEM_H;
-		if (indexX >= 1.5 && indexX <= 3.5 &&
-			indexY >= 5 && indexY <= 7) {
-			return true;
-		}
-		return false;
-	}
-
-	//can we place a gem here?
-	this.testPlaceGem = function(index) {
-		if(this.onBoard(index)) {
-			if(this.gemArray[index.x][index.y] == null) {
-				return true;
-			}
-		}
-		return false;
+		this.matchValue = 0;
 	}
 
 	//make a new gem and get a new value for the next gem
 	this.placeGem = function(index) {
 		if(this.gemArray[index.x][index.y] == null) {
 			this.gemArray[index.x][index.y] = new gemClass();
-			this.gemArray[index.x][index.y].init(this.randomValue);
+			this.gemArray[index.x][index.y].init(this.nextValue);
 			this.gemArray[index.x][index.y].place(index.x, index.y);
 			this.getNewNextGem();
 		} else if(index.x == 0 && index.y == 5) {
 			this.getNewNextGem();
 		} else {
-			this.releaseGems();
+			this.nextGem.release();
 		}
 	}
-
-
 
 	this.getNewNextGem = function() {
-		this.nextGems = [];
-		this.orientation = 0;
-		if(Math.random() <= this.chanceForDouble) {
-			this.nextGems.length=2;
-			for (var i = this.nextGems.length - 1; i >= 0; i--) {
-				this.nextGems[i] = new gemClass();
-				this.nextGems[i].init(this.randomValue());
-				this.nextGems[i].place({x:i+this.nextGems.length-0.5, y:5.5});
-			}
-		} else {
-			this.nextGems.length=1;
-			this.nextGems[0] = new gemClass();
-			this.nextGems[0].init(this.randomValue());
-			this.nextGems[0].place({x:2,y:5.5});
-		}
-	}
-
-	this.randomValue = function() {
-		return valuesArray[Math.floor(Math.random() * valuesArray.length)];
+			var nextIndex = Math.floor(Math.random() * valuesArray.length);
+			this.nextValue = valuesArray[nextIndex];
+			this.nextGem.init(this.nextValue);
+			this.nextGem.place(2, 5);		
 	}
 
 	this.blowUp = function() {
-		console.log("Blowing Up");
 		var topLeft = {x:0 , y:0};
 		var bottomRight = {x:0 , y:0};
 		//setup 3x3 initially
@@ -352,5 +406,4 @@ function gemBoard() {
 		//bonus score
 		this.score += 50;
 	}
-
 }

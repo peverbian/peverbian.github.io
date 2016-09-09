@@ -28,9 +28,6 @@ function setupInput() {
 	canvas.addEventListener('mousemove', drag );
 	canvas.addEventListener('mousedown', startDrag );
 	canvas.addEventListener('mouseup', endDrag ); 
-	canvas.addEventListener('touchmove', drag );
-	canvas.addEventListener('touchstart', startDrag );
-	canvas.addEventListener('touchend', endDrag ); 
 	document.addEventListener('keydown', keyPressed );
 	document.addEventListener('keyup', keyReleased );
 }
@@ -52,25 +49,22 @@ function keyPressed(evt) {
 function drag(evt) {
 	var mousePos = calculateMousePos(evt);
 	if(mouseDragging == true) {
-		board.drag(mousePos);
+		board.nextGem.drag(mousePos);
 	}
 }
  
 function startDrag(evt) {
 	var mousePos = calculateMousePos(evt);
-	if(mousePos.x > GEM_W * 1.5 && mousePos.x < GEM_W * 3.5 &&
-		mousePos.y > GEM_H * 5 && mousePos.y < height) {
+	if(mouseDragging == false) {
 	   	mouseDragging = true;
-	   	board.startDrag(mousePos);		
+	   	board.startDrag(mousePos);
 	}
 }
 
 function endDrag(evt) {
 	var mousePos = calculateMousePos(evt);
-	if(mouseDragging == true) {
-		board.endDrag(mousePos);
-		mouseDragging = false;
-	}
+	board.endDrag(mousePos);
+	mouseDragging = false;
 }
 
 function keyReleased(evt) {
