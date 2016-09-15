@@ -1,14 +1,32 @@
 	//checks if the board is full.
-	function boardFull(board) {
+	function boardFull1(board) {
 		var full = true;
 		for(var i = 0; i < board.length; i++) {
 			for(var j = 0; j < board[i].length; j++) {
 				if(board[i][j] == null) {
-					full = false;
+					return false;
 				}
 			}
 		}
-		return full;
+		return true;
+	}	
+
+	function boardFull2(board) {
+		for(var i = 0; i < board.length; i++) {
+			for(var j = 0; j < board[i].length-1; j++) {
+				if(board[i][j] == null && board[i][j+1] == null ) {
+					return false;
+				}
+			}
+		}
+		for(var i = 0; i < board.length-1; i++) {
+			for(var j = 0; j < board[i].length; j++) {
+				if(board[i][j] == null && board[i+1][j] == null ) {
+					return false;
+				}
+			}
+		}
+		return true;
 	}
 
 	//check if there's a match of 3 - found by the middle one and returned.

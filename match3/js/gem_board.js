@@ -18,7 +18,7 @@ function gemBoard() {
 	this.chanceForDouble = 0; // chance that next gem is 2 at once.  0 = no chance, 1 = always double.
 	this.root; //index of most recent gem in combination
 	this.orientation = 0; //0 = horizontal, 1 = vertical, used for multiple gems
-
+	this.trashes = 1;
 
 	this.init = function() {
 		this.gemArray.length = 5;
@@ -35,6 +35,7 @@ function gemBoard() {
 		this.level = 0;
 		this.chanceForDouble = 0;
 		this.pointsToNextLevel = 50;
+		this.trashes = 1;
 		delete this.nextGems;
 		this.nextGems = [];
 		this.nextGems[0] = new gemClass();
@@ -48,26 +49,35 @@ function gemBoard() {
 	}
 
 	this.update = function() {
-		if(boardFull(this.gemArray) == false && playing == true){
-			if(this.animating) {
-				this.animate();
+		if(playing == true) {
+			var boardFull = true;
+			if(this.nextGems.length == 1) {
+				boardFull = boardFull1(this.gemArray);
 			} else {
-				var index = checkBoard(this.gemArray);
-				if(index.x != -1 || index.y != -1) {
-					//clearCombination(this.combination);
-					this.matchValue = this.gemArray[index.x][index.y].value;
-					var combination = getCombination(this.gemArray,index);
-					this.root = getRoot(this.gemArray, combination);
-					this.makeAnimation(combination, this.root);
-				}
+				boardFull = boardFull2(this.gemArray);
 			}
-		} else {
-			playing = false;
+
+			if(boardFull == false && this.trashes >= 0){
+				if(this.animating) {
+					this.animate();
+				} else {
+					var index = checkBoard(this.gemArray);
+					if(index.x != -1 || index.y != -1) {
+						//clearCombination(this.combination);
+						this.matchValue = this.gemArray[index.x][index.y].value;
+						var combination = getCombination(this.gemArray,index);
+						this.root = getRoot(this.gemArray, combination);
+						this.makeAnimation(combination, this.root);
+					}
+				}
+			} else {
+				playing = false;
+			}
+			for (var i = this.nextGems.length - 1; i >= 0; i--) {
+				this.nextGems[i].update();
+			}
+			this.checkLevel();
 		}
-		for (var i = this.nextGems.length - 1; i >= 0; i--) {
-			this.nextGems[i].update();
-		}
-		this.checkLevel();
 	}
 
 	this.resetHomes = function() {
@@ -147,6 +157,11 @@ function gemBoard() {
 
 	this.drawTrash = function() {
 		drawBitmapStretched(spriteSheets[3], 0, 5*GEM_H, GEM_W, GEM_H);	
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";		
+		ctx.fillStyle = "yellow";
+		ctx.font="20px Georgia";
+		ctx.fillText(this.trashes,GEM_W * .5, GEM_H * 6.5);
 	}
 
 	this.drawScore = function(x,y) {
@@ -165,14 +180,21 @@ function gemBoard() {
 
 	this.drawLevel = function() {
 
+		ctx.strokeStyle = "red";
+		ctx.lineWidth=GEM_H/8;
+		ctx.beginPath();
+		ctx.arc(GEM_W * 4.25, GEM_H * 6, GEM_H * 0.4, 2*Math.PI * (this.score % pointsToNextLevel)/pointsToNextLevel, 2*Math.PI, false);
+		ctx.stroke();
 		ctx.strokeStyle = "yellow";
 		ctx.lineWidth=GEM_H/8;
 		ctx.beginPath();
 		ctx.arc(GEM_W * 4.25, GEM_H * 6, GEM_H * 0.4, 0, 2*Math.PI * (this.score % pointsToNextLevel)/pointsToNextLevel, false);
 		ctx.stroke();
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";		
 		ctx.fillStyle = "yellow";
 		ctx.font="20px Georgia";
-		ctx.fillText(this.level,GEM_W * 4.2, GEM_H * 6);
+		ctx.fillText(this.level,GEM_W * 4.25, GEM_H * 6);
 	}
 
 
@@ -205,7 +227,10 @@ function gemBoard() {
 		console.log("Releasing at " + index.x + "," + index.y);
 		if(this.onTrash(index) ) {  //if we drop on the trash can, get a new gem.
 			console.log("On Trash");
-			this.getNewNextGem();
+			if(this.trashes > 0) {
+				this.trashes--;
+				this.getNewNextGem();
+			}
 		} else if(this.onHome(mousePos) && this.nextGems.length > 1) { //if we drop on home, rotate the multi-gem
 			if(this.orientation == 0) {
 				this.orientation = 1;
