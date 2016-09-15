@@ -22,12 +22,30 @@ function gemClass() {
 		sequenceCount++;
 	}
 
-	this.place = function(atRow, atCol) {
-		this.row = atRow;
-		this.col = atCol;
-		this.x = atRow * GEM_W;
-		this.y = atCol * GEM_H;
+	this.place = function(index) {
+		this.row = index.x;
+		this.col = index.y;
+		this.x = index.x * GEM_W;
+		this.y = index.y * GEM_H;
 		console.log("Gem of value " + this.value + " at " + this.x + "," + this.y);
+	}
+
+	this.getIndex = function() {
+		var index = {x:0, y:0};
+		index.x = Math.floor((this.x/GEM_W)+0.5); 
+		index.y = Math.floor((this.y/GEM_H)+0.5);
+		return index;
+	}
+
+	this.getValue = function() {
+		return this.value;
+	}
+
+	this.getPos = function() {
+		var gemPos = {x:0, y:0};
+		gemPos.x = this.x;
+		gemPos.y = this.y;
+		
 	}
 
 	this.moveTo = function(atRow, atCol) {
@@ -40,7 +58,7 @@ function gemClass() {
 		//document.getElementById("debugText").innerHTML = this.x + "," + this.y;	
 		//if the gem is not being dragged, move back.
 		if(this.dragging == false && this.home == false) {
-			console.log("Moving Back to " + (this.row * GEM_W) + "," + (this.col * GEM_H) + " from " + this.x + "," + this.y);
+			//console.log("Moving Back to " + (this.row * GEM_W) + "," + (this.col * GEM_H) + " from " + this.x + "," + this.y);
 			//move it back
 			if(this.x > this.row * GEM_W)  {
 				this.x -= this.returnSpeed;;
@@ -56,11 +74,11 @@ function gemClass() {
 			}
 			//snap to grid
 			if(this.x != this.row * GEM_W && this.x <= (this.row * GEM_W)+this.returnSpeed && this.x >= (this.row * GEM_W)-this.returnSpeed)  {
-				console.log("Snapping to X");
+				//console.log("Snapping to X");
 				this.x = this.row * GEM_W;
 			}
 			if(this.y != (this.col * GEM_H) && this.y <= (this.col * GEM_H)+this.returnSpeed && this.y >= (this.col * GEM_H)-this.returnSpeed)  {
-				console.log("Snapping to Y");
+				//console.log("Snapping to Y");
 				this.y = this.col * GEM_H;
 			}
 			this.returnSpeed *= 1.4;
@@ -80,14 +98,17 @@ function gemClass() {
 	}
 
 	this.drag = function(mousePos) {
-		this.x = mousePos.x - GEM_W/2;
-		this.y = mousePos.y - GEM_H/2;
+		this.x = mousePos.x;
+		this.y = mousePos.y;
 		this.dragging = true;
 		this.home = false;
 	}
 
 	this.release = function() {
-
 		this.dragging = false;
+	}
+	this.reset = function() {
+		this.x = this.row * GEM_W;
+		this.y = this.col * GEM_H;
 	}
 }

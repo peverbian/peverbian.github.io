@@ -18,32 +18,38 @@ const STARTING = 4;
 
 var GAME_STATE = LOADING;
 
-
 window.onload = function() {
 	setupCanvas();
 	colorRect(0,0,canvas.width, canvas.height, "black");
 	loadImages();
 }
 
-function setupCanvas() {
-	canvas = document.getElementById('gameCanvas');
-	ctx = canvas.getContext('2d');
+window.onresize = function() {
+		resizeCanvas();
+		board.resetHomes();
+}
+
+function resizeCanvas() {
 	width = window.innerWidth;
 	height = window.innerHeight;
-
-	if(width >= 600) {
-		width = 320;
-		height = 384;
-	} else if(width/5 > height/6) {
-		width = 5 * height / 6;
+	document.getElementById("debugText").innerHTML = "Window size: " + width + "," + height;
+	GEM_W = 128;
+	GEM_H = 128;
+	/*if(width >= GEM_W * 5) {
+		width = GEM_W * 5;
+		height = GEM_H * 7;
+	} else*/ if(width/5 > height/7) {
+		width = 5 * height / 7;
 	} else {
-		height = 6 * width / 5;
+		height = 7 * width / 5;
 	}
 	GEM_W = width/5;
-	GEM_H = height/6;
+	GEM_H = height/7;
 	canvas.style.boarder = "1px solid #000";
 	canvas.width = width;
 	canvas.height = height;
+	document.getElementById("debugText").innerHTML += "Canvas size: " + canvas.width + "," + canvas.height;
+	document.getElementById("debugText").innerHTML += "Gem Size: " + GEM_W + "," + GEM_H;	
 }
 
 function startGame() {
@@ -60,8 +66,10 @@ function startGame() {
 			}, 1000/framesPerSecond);
 }
 
-function spawnGem(mousePos) {
-
+function setupCanvas() {
+	canvas = document.getElementById('gameCanvas');
+	ctx = canvas.getContext('2d');
+	resizeCanvas();
 }
 
 function switchSpriteSheets() {
@@ -76,7 +84,7 @@ function switchSpriteSheets() {
 	} else {
 		console.log("Switching to gems.")
 		gemSprites = gemsSprites.slice();;
-		spriteSheetIndex = 2;
+		spriteSheetIndex = 0;
 	}
 
 }
