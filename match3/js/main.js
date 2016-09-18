@@ -110,7 +110,7 @@ function drawSplash() {
 	ctx.textBaseline = "middle";		
 	ctx.fillStyle = "black";
 	ctx.font="20px Georgia";
-	ctx.fillText("Press Here to Start!",GEM_W * 2.5, GEM_H * 1.5);
+	ctx.fillText("Press Here",GEM_W * 2.5, GEM_H * 1.5);
 	ctx.fillText("to",GEM_W * 2.5, GEM_H * 2.5);
 	ctx.fillText("Start!",GEM_W * 2.5, GEM_H * 3.5);
 
