@@ -3,7 +3,7 @@ var valuesArray = [1,1,1,1,2,2,2,2,3,3,3,4,4,5,5,6,6];  //used to control the fr
 //var valuesArray = [1,1,1,1];  //used to control the frequency of each value.
 var text = "";
 const maxValue = 6;
-const pointsToNextLevel = 50;
+const pointsToNextLevel = 100;
 function gemBoard() {
 	this.gemArray = [];
 	this.animateArray = [];
@@ -34,7 +34,7 @@ function gemBoard() {
 		this.score = 0;
 		this.level = 0;
 		this.chanceForDouble = 0;
-		this.pointsToNextLevel = 50;
+		this.pointsToNextLevel = 100;
 		this.trashes = 1;
 		delete this.nextGems;
 		this.nextGems = [];
@@ -196,9 +196,6 @@ function gemBoard() {
 		ctx.font="20px Georgia";
 		ctx.fillText(this.level,GEM_W * 4.25, GEM_H * 6);
 	}
-
-
-
 
 	this.makeAnimation = function(combination) {
 		for(var i = 0; i < combination.length; i++) {

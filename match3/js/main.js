@@ -106,4 +106,12 @@ function drawBackground() {
 }
 function drawSplash() {
 	colorRect(GEM_W,GEM_H,3 * GEM_W, 3 * GEM_H, 'white');
+	ctx.textAlign = "center";
+	ctx.textBaseline = "middle";		
+	ctx.fillStyle = "black";
+	ctx.font="20px Georgia";
+	ctx.fillText("Press Here to Start!",GEM_W * 2.5, GEM_H * 1.5);
+	ctx.fillText("to",GEM_W * 2.5, GEM_H * 2.5);
+	ctx.fillText("Start!",GEM_W * 2.5, GEM_H * 3.5);
+
 }

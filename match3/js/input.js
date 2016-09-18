@@ -120,6 +120,10 @@ function endDrag(mousePos) {
 		board.endDrag(mousePos);
 		mouseDragging = false;
 	}
+	if(playing == false) {
+		board.reset();
+		playing = true;
+	}
 }
 
 function keyReleased(evt) {
