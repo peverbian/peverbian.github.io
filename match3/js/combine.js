@@ -1,20 +1,25 @@
 	//checks if the board is full.
 	function boardFull1(board) {
+		//console.log("checking for 1 spot");
 		var full = true;
 		for(var i = 0; i < board.length; i++) {
 			for(var j = 0; j < board[i].length; j++) {
 				if(board[i][j] == null) {
+					//console.log("found a spot");
 					return false;
 				}
 			}
 		}
+		//console.log("board is full");
 		return true;
 	}	
 
 	function boardFull2(board) {
+		//console.log("checking for 2 spots");
 		for(var i = 0; i < board.length; i++) {
 			for(var j = 0; j < board[i].length-1; j++) {
 				if(board[i][j] == null && board[i][j+1] == null ) {
+					//console.log("found 2 spots next to each other");
 					return false;
 				}
 			}
@@ -22,10 +27,12 @@
 		for(var i = 0; i < board.length-1; i++) {
 			for(var j = 0; j < board[i].length; j++) {
 				if(board[i][j] == null && board[i+1][j] == null ) {
+					//console.log("found 2 spots next to each other");
 					return false;
 				}
 			}
 		}
+		//console.log("board is full");
 		return true;
 	}
 

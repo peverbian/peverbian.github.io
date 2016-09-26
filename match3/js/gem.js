@@ -14,12 +14,14 @@ function gemClass() {
 	this.dragging = false;//is the gem being dragged by the mouse?
 	this.home = true; //is the gem where it's supposed to be?
 	this.returnSpeed = 1;
+	this.highlighted;
 
 	this.init = function(value) {
 		this.value = value;
 		this.gemPic = gemSprites[value-1];
 		this.sequence = sequenceCount;
 		sequenceCount++;
+		this.hightlihgted = false;
 	}
 
 	this.place = function(index) {
@@ -27,7 +29,7 @@ function gemClass() {
 		this.col = index.y;
 		this.x = index.x * GEM_W;
 		this.y = index.y * GEM_H;
-		console.log("Gem of value " + this.value + " at " + this.x + "," + this.y);
+		//console.log("Gem of value " + this.value + " at " + this.x + "," + this.y);
 	}
 
 	this.getIndex = function() {
@@ -90,7 +92,16 @@ function gemClass() {
 	}
 
 	this.draw = function() {
+		if(this.highlighted == true) {
+			//console.log("Drawing Highlighted")
+			colorRect(this.x, this.y, GEM_W, GEM_H, "yellow");
+		}
 		gemSprites[this.value-1].drawStretched(this.x, this.y, GEM_W, GEM_H);	
+	}
+
+	this.highlight = function() {
+		//console.log("highlighing gem")
+		this.highlighted = true;
 	}
 
 	this.atHome = function() {

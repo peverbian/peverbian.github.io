@@ -115,3 +115,9 @@ function drawSplash() {
 	ctx.fillText("Start!",GEM_W * 2.5, GEM_H * 3.5);
 
 }
+
+function resetGame() {
+	//console.log("resetting external");
+	board.reset();
+	playing = true;
+}

@@ -43,8 +43,7 @@ function keySet(evt, mob, setTo) {
 
 function keyPressed(evt) {
 	if(evt.keyCode == KEY_SPACE) {
-		board.reset();
-		playing = true;
+		resetGame();
 	}
 	if(evt.keyCode == KEY_ENTER && playing == true) {
 		switchSpriteSheets();
@@ -83,7 +82,9 @@ function handleTouchStart(evt) {
 	//var touch = evt.changedTouches[0];
 	var touch = evt.changedTouches[0];
 	var mousePos = calculateTouchPos(touch);
-	startDrag(mousePos);
+	if(playing == true) {
+		startDrag(mousePos);
+	}	
 }
 
 function handleTouchUp(evt) {

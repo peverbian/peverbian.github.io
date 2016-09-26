@@ -1,5 +1,5 @@
 
-var valuesArray = [1,1,1,1,2,2,2,2,3,3,3,4,4,5,5,6,6];  //used to control the frequency of each value.
+var valuesArray = [1,1,1,1,1,1,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,6,6];  //used to control the frequency of each value.
 //var valuesArray = [1,1,1,1];  //used to control the frequency of each value.
 var text = "";
 const maxValue = 6;
@@ -19,6 +19,7 @@ function gemBoard() {
 	this.root; //index of most recent gem in combination
 	this.orientation = 0; //0 = horizontal, 1 = vertical, used for multiple gems
 	this.trashes = 1;
+	this.fullBoard = false;
 
 	this.init = function() {
 		this.gemArray.length = 5;
@@ -31,11 +32,13 @@ function gemBoard() {
 
 	//resets the board after a deadlock
 	this.reset = function() {
+		//console.log("Resetting Board");
 		this.score = 0;
 		this.level = 0;
 		this.chanceForDouble = 0;
 		this.pointsToNextLevel = 100;
 		this.trashes = 1;
+		this.fullBoard = false;
 		delete this.nextGems;
 		this.nextGems = [];
 		this.nextGems[0] = new gemClass();
@@ -50,34 +53,35 @@ function gemBoard() {
 
 	this.update = function() {
 		if(playing == true) {
-			var boardFull = true;
-			if(this.nextGems.length == 1) {
-				boardFull = boardFull1(this.gemArray);
+			if(this.animating) {
+				this.animate();
 			} else {
-				boardFull = boardFull2(this.gemArray);
-			}
-
-			if(boardFull == false && this.trashes >= 0){
-				if(this.animating) {
-					this.animate();
-				} else {
-					var index = checkBoard(this.gemArray);
-					if(index.x != -1 || index.y != -1) {
-						//clearCombination(this.combination);
-						this.matchValue = this.gemArray[index.x][index.y].value;
-						var combination = getCombination(this.gemArray,index);
-						this.root = getRoot(this.gemArray, combination);
-						this.makeAnimation(combination, this.root);
-					}
+				var index = checkBoard(this.gemArray);
+				if(index.x != -1 || index.y != -1) {
+					//clearCombination(this.combination);
+					this.matchValue = this.gemArray[index.x][index.y].value;
+					var combination = getCombination(this.gemArray,index);
+					this.root = getRoot(this.gemArray, combination);
+					this.makeAnimation(combination, this.root);
 				}
-			} else {
+			}
+			if(!this.animating) {
+				if(this.nextGems.length == 1) {
+					this.fullBoard = boardFull1(this.gemArray);
+				} else {
+					this.fullBoard = boardFull2(this.gemArray);
+				}
+			}
+			if(playing == true && this.fullBoard == true) {
+				//console.log("Game Over");
 				playing = false;
+				this.endDrag({x:GEM_W*2.5,y:GEM_H*6});
 			}
 			for (var i = this.nextGems.length - 1; i >= 0; i--) {
 				this.nextGems[i].update();
 			}
 			this.checkLevel();
-		}
+		} 
 	}
 
 	this.resetHomes = function() {
@@ -114,13 +118,17 @@ function gemBoard() {
 		this.drawTrash();
 		//this.drawScore(3.5,6);
 		this.drawLevel();
-		for (var i = this.nextGems.length - 1; i >= 0; i--) {
-			this.nextGems[i].draw();
-		}
+		//draw the next gem
+		this.drawNextGems();
+		//draw any animation
 		if(this.animateArray.length > 0) {
 			for (var i = this.animateArray.length - 1; i >= 0; i--) {
 				this.animateArray[i].draw();
 			}	
+		}
+		//draw the splash if we lost.
+		if(playing == false) {
+			this.showSplash();
 		}
 	}
 
@@ -140,7 +148,7 @@ function gemBoard() {
 	this.finishAnimation = function() {
 		var matchValue = this.animateArray[0].value;
 		while(this.animateArray.length > 0) {
-			console.log("Removing Gem");
+			//console.log("Removing Gem");
 			this.animateArray.pop();
 		}
 		if(this.matchValue >= maxValue) {
@@ -179,7 +187,6 @@ function gemBoard() {
 	}
 
 	this.drawLevel = function() {
-
 		ctx.strokeStyle = "red";
 		ctx.lineWidth=GEM_H/8;
 		ctx.beginPath();
@@ -197,6 +204,12 @@ function gemBoard() {
 		ctx.fillText(this.level,GEM_W * 4.25, GEM_H * 6);
 	}
 
+	this.drawNextGems = function() {
+		for (var i = this.nextGems.length - 1; i >= 0; i--) {
+			this.nextGems[i].draw();
+		}
+	}
+
 	this.makeAnimation = function(combination) {
 		for(var i = 0; i < combination.length; i++) {
 			this.score += this.gemArray[combination[i].x][combination[i].y].value;
@@ -212,7 +225,7 @@ function gemBoard() {
 	 	   mousePos.x > 2 * GEM_W && 
 	  	   mousePos.y < 6 * GEM_H && 
 	       mousePos.y > 5 * GEM_H)  {
-			console.log("Valid Drag");
+			//console.log("Valid Drag");
 			this.drag(mousePos);
 		}
 	}
@@ -221,9 +234,9 @@ function gemBoard() {
 		var index = {x: 0, y: 0};
 		index.x = Math.floor(mousePos.x/GEM_W);
 		index.y = Math.floor(mousePos.y/GEM_H);
-		console.log("Releasing at " + index.x + "," + index.y);
+		//console.log("Releasing at " + index.x + "," + index.y);
 		if(this.onTrash(index) ) {  //if we drop on the trash can, get a new gem.
-			console.log("On Trash");
+			//console.log("On Trash");
 			if(this.trashes > 0) {
 				this.trashes--;
 				this.getNewNextGem();
@@ -264,6 +277,22 @@ function gemBoard() {
 		}
 	}
 
+	this.rotateGems = function() {
+		if(this.orientation == 0) {
+			this.orientation = 1;
+			for (var i = this.nextGems.length - 1; i >= 0; i--) {
+					this.nextGems[i].place({x:2, y:5 + i});
+			}
+		} else {
+			this.orientation = 0;
+			this.swapGems();
+			for (var i = this.nextGems.length - 1; i >= 0; i--) {
+				this.nextGems[i].place({x:i+this.nextGems.length-0.5, y:5.5});
+			}
+		}
+
+	}
+
 	this.drag = function(mousePos)  {
 		var gemPos = {x: 0, y: 0};
 		if(this.nextGems.length == 1) {
@@ -293,7 +322,7 @@ function gemBoard() {
 		}
 	}
 	this.swapGems = function() {
-		console.log("Swapping Gems");
+		//console.log("Swapping Gems");
 		var tempGem = this.nextGems[0];
 		this.nextGems[0] = this.nextGems[1];
 		this.nextGems[1] = tempGem;	
@@ -364,6 +393,7 @@ function gemBoard() {
 				this.nextGems[i].init(this.randomValue());
 				this.nextGems[i].place({x:i+this.nextGems.length-0.5, y:5.5});
 			}
+			this.nextGems[0].highlight();
 		} else {
 			this.nextGems.length=1;
 			this.nextGems[0] = new gemClass();
@@ -377,7 +407,7 @@ function gemBoard() {
 	}
 
 	this.blowUp = function() {
-		console.log("Blowing Up");
+		//console.log("Blowing Up");
 		var topLeft = {x:0 , y:0};
 		var bottomRight = {x:0 , y:0};
 		//setup 3x3 initially
@@ -401,6 +431,15 @@ function gemBoard() {
 		}
 		//bonus score
 		this.score += 50;
+	}
+
+	this.showSplash = function() {
+		colorRect(GEM_W, GEM_H, 3*GEM_W, 3*GEM_H, "black");
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";		
+		ctx.fillStyle = "yellow";
+		ctx.font="20px Georgia";
+		ctx.fillText("Game Over!",GEM_W * 2.5, GEM_H * 2.5);
 	}
 
 }
