@@ -393,7 +393,9 @@ function gemBoard() {
 				this.nextGems[i].init(this.randomValue());
 				this.nextGems[i].place({x:i+this.nextGems.length-0.5, y:5.5});
 			}
-			this.nextGems[0].highlight();
+			if(this.nextGems[0].value == this.nextGems[1].value) {
+				this.nextGems[0].highlight();
+			}
 		} else {
 			this.nextGems.length=1;
 			this.nextGems[0] = new gemClass();
