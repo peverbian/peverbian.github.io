@@ -45,6 +45,9 @@ function keyPressed(evt) {
 	if(evt.keyCode == KEY_SPACE) {
 		resetGame();
 	}
+	if(evt.keyCode == KEY_W) {
+		board.chanceForDouble = 1;
+	}
 	if(evt.keyCode == KEY_ENTER && playing == true) {
 		switchSpriteSheets();
 	}

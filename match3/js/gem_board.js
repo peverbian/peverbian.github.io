@@ -66,6 +66,9 @@ function gemBoard() {
 				}
 			}
 			if(!this.animating) {
+				if(!this.nextGems) {
+					this.getNewNextGem();
+				}
 				if(this.nextGems.length == 1) {
 					this.fullBoard = boardFull1(this.gemArray);
 				} else {
@@ -77,8 +80,10 @@ function gemBoard() {
 				playing = false;
 				this.endDrag({x:GEM_W*2.5,y:GEM_H*6});
 			}
-			for (var i = this.nextGems.length - 1; i >= 0; i--) {
-				this.nextGems[i].update();
+			if(this.nextGems) {
+				for (var i = this.nextGems.length - 1; i >= 0; i--) {
+					this.nextGems[i].update();
+				}
 			}
 			this.checkLevel();
 		} 
@@ -205,8 +210,10 @@ function gemBoard() {
 	}
 
 	this.drawNextGems = function() {
-		for (var i = this.nextGems.length - 1; i >= 0; i--) {
-			this.nextGems[i].draw();
+		if(this.nextGems) {
+			for (var i = this.nextGems.length - 1; i >= 0; i--) {
+				this.nextGems[i].draw();
+			}
 		}
 	}
 
@@ -242,18 +249,7 @@ function gemBoard() {
 				this.getNewNextGem();
 			}
 		} else if(this.onHome(mousePos) && this.nextGems.length > 1) { //if we drop on home, rotate the multi-gem
-			if(this.orientation == 0) {
-				this.orientation = 1;
-				for (var i = this.nextGems.length - 1; i >= 0; i--) {
-					this.nextGems[i].place({x:2, y:5 + i});
-				}
-			} else {
-				this.orientation = 0;
-				this.swapGems();
-				for (var i = this.nextGems.length - 1; i >= 0; i--) {
-					this.nextGems[i].place({x:i+this.nextGems.length-0.5, y:5.5});
-				}
-			}
+			this.rotateGems();
 		} else {
 			var canPlaceAll = true;
 			for (var i = this.nextGems.length - 1; i >= 0; i--) {
@@ -264,11 +260,12 @@ function gemBoard() {
 			if(canPlaceAll == true) {
 				for (var i = this.nextGems.length - 1; i >= 0; i--) {
 					var placingIndex = this.nextGems[i].getIndex();
-					this.gemArray[placingIndex.x][placingIndex.y] = new gemClass();
-					this.gemArray[placingIndex.x][placingIndex.y].init(this.nextGems[i].getValue());
+					this.gemArray[placingIndex.x][placingIndex.y] = this.nextGems[i]; // new gemClass();
+					//this.gemArray[placingIndex.x][placingIndex.y].init(this.nextGems[i].getValue());
 					this.gemArray[placingIndex.x][placingIndex.y].place(placingIndex);
+					this.gemArray[placingIndex.x][placingIndex.y].release();
 				}
-				this.getNewNextGem();
+				delete this.nextGems;
 			} else {
 				for (var i = this.nextGems.length - 1; i >= 0; i--) {
 					this.nextGems[i].release();
@@ -384,7 +381,7 @@ function gemBoard() {
 
 
 	this.getNewNextGem = function() {
-		this.nextGems = [];
+		this.nextGems = new Array();
 		this.orientation = 0;
 		if(Math.random() <= this.chanceForDouble) {
 			this.nextGems.length=2;
@@ -393,7 +390,7 @@ function gemBoard() {
 				this.nextGems[i].init(this.randomValue());
 				this.nextGems[i].place({x:i+this.nextGems.length-0.5, y:5.5});
 			}
-			if(this.nextGems[0].value == this.nextGems[1].value) {
+			if(this.nextGems[0].value === this.nextGems[1].value) {
 				this.nextGems[0].highlight();
 			}
 		} else {

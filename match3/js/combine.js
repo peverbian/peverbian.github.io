@@ -141,8 +141,10 @@
 					combinationIndex++;
 					combinedAll = false;
 				}
-				
 			}
+		}
+		for(var i = 0; i < combination.length; i++) {
+			console.log("Matching " + combination[i].x + "," + combination[i].y + " s:" + combination[i].sequence);
 		}
 		return combination;
 	}

@@ -21,7 +21,7 @@ function gemClass() {
 		this.gemPic = gemSprites[value-1];
 		this.sequence = sequenceCount;
 		sequenceCount++;
-		this.hightlihgted = false;
+		this.highlighted = false;
 	}
 
 	this.place = function(index) {
@@ -93,7 +93,7 @@ function gemClass() {
 
 	this.draw = function() {
 		if(this.highlighted == true) {
-			//console.log("Drawing Highlighted")
+			console.log("Drawing highlighted")
 			colorRect(this.x, this.y, GEM_W, GEM_H, "yellow");
 		}
 		gemSprites[this.value-1].drawStretched(this.x, this.y, GEM_W, GEM_H);	
@@ -118,6 +118,7 @@ function gemClass() {
 	this.release = function() {
 		this.dragging = false;
 	}
+
 	this.reset = function() {
 		this.x = this.row * GEM_W;
 		this.y = this.col * GEM_H;
