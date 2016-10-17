@@ -247,6 +247,10 @@ function gemBoard() {
 			if(this.trashes > 0) {
 				this.trashes--;
 				this.getNewNextGem();
+			} else {
+				for (var i = this.nextGems.length - 1; i >= 0; i--) {
+					this.nextGems[i].release();
+				}				
 			}
 		} else if(this.onHome(mousePos) && this.nextGems.length > 1) { //if we drop on home, rotate the multi-gem
 			this.rotateGems();
