@@ -29,6 +29,7 @@ function gemClass() {
 		this.col = index.y;
 		this.x = index.x * GEM_W;
 		this.y = index.y * GEM_H;
+		this.highlighted = false;
 		//console.log("Gem of value " + this.value + " at " + this.x + "," + this.y);
 	}
 

@@ -38,7 +38,7 @@
 
 	//check if there's a match of 3 - found by the middle one and returned.
 	function checkBoard(board) {
-		var value = 0;
+		var value = 10;
 		var count = 0;
 		var index = {x:-1,y: -1};
 		for(var i = 0; i < board.length; i++) {
@@ -74,10 +74,10 @@
 						}
 					}
 				}
-				if(count >= 2) {
+				if(count >= 2 && board[i][j].value < value) {
 					index.x = i;
 					index.y = j;
-					return index;
+					value = board[i][j].value;
 				}
 			}
 		}

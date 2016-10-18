@@ -69,11 +69,7 @@ function gemBoard() {
 				if(!this.nextGems) {
 					this.getNewNextGem();
 				}
-				if(this.nextGems.length == 1) {
-					this.fullBoard = boardFull1(this.gemArray);
-				} else {
-					this.fullBoard = boardFull2(this.gemArray);
-				}
+				this.fullBoard = boardFull1(this.gemArray);
 			}
 			if(playing == true && this.fullBoard == true) {
 				//console.log("Game Over");
@@ -387,7 +383,7 @@ function gemBoard() {
 	this.getNewNextGem = function() {
 		this.nextGems = new Array();
 		this.orientation = 0;
-		if(Math.random() <= this.chanceForDouble) {
+		if(Math.random() <= this.chanceForDouble && boardFull2(this.gemArray) == false) {
 			this.nextGems.length=2;
 			for (var i = this.nextGems.length - 1; i >= 0; i--) {
 				this.nextGems[i] = new gemClass();
