@@ -18,7 +18,7 @@ function gemBoard() {
 	this.chanceForDouble = 0; // chance that next gem is 2 at once.  0 = no chance, 1 = always double.
 	this.root; //index of most recent gem in combination
 	this.orientation = 0; //0 = horizontal, 1 = vertical, used for multiple gems
-	this.trashes = 10;
+	this.trashes = 2;
 	this.fullBoard = false;
 
 	this.init = function() {
@@ -37,7 +37,7 @@ function gemBoard() {
 		this.level = 0;
 		this.chanceForDouble = 0;
 		this.pointsToNextLevel = 100;
-		this.trashes = 10;
+		this.trashes = 2;
 		this.fullBoard = false;
 		delete this.nextGems;
 		this.nextGems = [];
@@ -181,10 +181,10 @@ function gemBoard() {
 
 	this.checkLevel = function() {
 		if(this.score - ( this.level * pointsToNextLevel) >= 0) {
-			this.level ++;
+			this.level += 1;
 			this.chanceForDouble += 0.05;
 			this.pointsToNextLevel += 50;
-			this.trashes += Math.floor(level/2);
+			this.trashes += 1 + Math.floor(this.level/2);
 		}		
 	}
 
