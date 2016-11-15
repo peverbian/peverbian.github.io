@@ -175,7 +175,7 @@ function gemBoard() {
 
 	this.drawScore = function(x,y) {
 		ctx.fillStyle = "yellow";
-		ctx.font="12px Georgia";
+		ctx.font="12px Georgia";--
 		ctx.fillText("Score: " + this.score,GEM_W * (x), GEM_H * (y + 0.5));
 	}
 
@@ -264,6 +264,7 @@ function gemBoard() {
 					this.gemArray[placingIndex.x][placingIndex.y] = this.nextGems[i]; // new gemClass();
 					//this.gemArray[placingIndex.x][placingIndex.y].init(this.nextGems[i].getValue());
 					this.gemArray[placingIndex.x][placingIndex.y].place(placingIndex);
+					this.gemArray[placingIndex.x][placingIndex.y].unhighlight();
 					this.gemArray[placingIndex.x][placingIndex.y].release();
 				}
 				delete this.nextGems;
@@ -365,22 +366,7 @@ function gemBoard() {
 		return false;
 	}
 
-	//make a new gem and get a new value for the next gem
-	this.placeGem = function(index) {
-		if(this.gemArray[index.x][index.y] == null) {
-			this.gemArray[index.x][index.y] = new gemClass();
-			this.gemArray[index.x][index.y].init(this.randomValue);
-			this.gemArray[index.x][index.y].place(index.x, index.y);
-			this.getNewNextGem();
-		} else if(index.x == 0 && index.y == 5) {
-			this.getNewNextGem();
-		} else {
-			this.releaseGems();
-		}
-	}
-
-
-
+	//generate a new gem after placing one.	
 	this.getNewNextGem = function() {
 		this.nextGems = new Array();
 		this.orientation = 0;
@@ -402,10 +388,12 @@ function gemBoard() {
 		}
 	}
 
+	//get a random value for the next gems.
 	this.randomValue = function() {
 		return valuesArray[Math.floor(Math.random() * valuesArray.length)];
 	}
 
+	//when gem match is the max value, take out a 3x3.
 	this.blowUp = function() {
 		//console.log("Blowing Up");
 		var topLeft = {x:0 , y:0};

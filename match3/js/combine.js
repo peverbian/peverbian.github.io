@@ -14,6 +14,7 @@
 		return true;
 	}	
 
+	//check if the board has space for a 2x gem
 	function boardFull2(board) {
 		//console.log("checking for 2 spots");
 		for(var i = 0; i < board.length; i++) {
@@ -85,6 +86,7 @@
 	}
 
 	//combine all the gems that are connected to the given index
+	//returns an array of indices
 	function getCombination(board, index) {
 		var combination = [];
 		combination.push(index);
