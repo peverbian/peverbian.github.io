@@ -11,11 +11,12 @@ function mobClass() {
 
 	this.init = function(start, goal) {
 		this.pos = tileToPos(start);
+		this.pos.x -= 100;
 		this.goal = tileToPos(goal);
-		this.HP = 250;
+		this.HP = 25000;
 		this.waypoints.push(tileToPos(tiles.getNext(start)));
 		//console.log(this.waypoints);
-		console.log(this);
+		//console.log(this);
 	}
 
 	this.update = function(dt) {
@@ -35,7 +36,9 @@ function mobClass() {
 		//Is there another waypoint.
 		if(this.waypoints[0]) {
 			this.dir = this.waypoints[0].subtract(this.pos);
-		} else {
+		}
+
+		if(this.waypoints[0].x == this.goal.x && this.waypoints[0].y == this.goal.y) {
 		//we reached our goal
 			console.log("Reached our goal");
 			this.timeToLive = 0;

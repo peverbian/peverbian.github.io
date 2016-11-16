@@ -71,7 +71,7 @@ function drawEverything() {
 
 function setup() {
 	tiles = new tileGrid();
-	tiles.init(15,15);
+	tiles.init(25,19);
 	then = Date.now();
 
 }
