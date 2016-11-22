@@ -40,6 +40,7 @@ function mainLoop() {
 
 function updateEverything(dt) {
 	mobSpawnDelay+=dt;
+	tiles.update(dt);
 	if(mobSpawnDelay >= mobSpawnRate) {
 		mobSpawnDelay=0;
 		var newMob = new mobClass();
@@ -47,10 +48,10 @@ function updateEverything(dt) {
 		mobs.push(newMob);
 	}
 	for (var i = mobs.length - 1; i >= 0; i--) {
+		mobs[i].update(dt);
 		if(mobs[i].timeToLive <= 0) {
 			mobs.splice(i,1);
 		}
-		mobs[i].update(dt);
 	}
 	for (var i = towers.length - 1; i >= 0; i--) {
 		towers[i].update(dt);
@@ -68,10 +69,9 @@ function drawEverything() {
 		towers[i].draw();
 	}
 }
-
 function setup() {
 	tiles = new tileGrid();
-	tiles.init(25,19);
+	tiles.init(25,17);
 	then = Date.now();
 
 }
@@ -98,10 +98,15 @@ function tileToPos(xy) {
 
 
 function spawnTower(pos) {
-		var tile = posToTile(pos);
+	var tile = posToTile(pos);
+	if(tiles.testTower(tile)) {
 		var newTower = new towerClass();
 	   	newTower.init(tile);
 	   	tiles.setWalkable(tile);
 	   	towers.push(newTower);
 	   	tiles.recalcPaths();
+	   	for (var i = mobs.length - 1; i >= 0; i--) {
+	   		mobs[i].recalcWaypoints();
+	   	}
+	}
 }

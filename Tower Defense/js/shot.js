@@ -24,7 +24,7 @@ function shotClass() {
 		}
 		this.dir = this.targetLoc.subtract(this.pos);
 		//console.log(this.dir);
-		if(this.dir.lengthSqr() > (this.speed)) {
+		if(this.dir.lengthSqr() > 10) {
 			this.dir = this.dir.unit();
 			this.pos = this.pos.add(this.dir.multiply(this.speed * dt));
 		} else {

@@ -1,14 +1,15 @@
 var TILE_SIZE = 32;
 
 const GROUND = 0;
-const WALL = 1;
+const WALL1 = 1;
+const WALL2 = 4;
 const SPAWN = 2;
 const GOAL = 3;
 
 var NUM_COLS = 0;
 var NUM_ROWS = 0;
 
-const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];
+const DIRS = [[1, 0], [0, 1], [-1, 0], [0, -1]];//,[1, 1], [-1, 1], [-1, -1], [1, -1]]; - remove comment to add diagonals
 
 const initialMap = [
 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
@@ -22,12 +23,12 @@ const initialMap = [
 2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
-1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,
+4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,
+4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,
+4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,
+4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,
+4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,
 ];
 
 
@@ -59,6 +60,9 @@ function tileClass() {
 			case 3:
 			this.color = "red"
 			break;
+			case 4:
+			this.color = "yellow"
+			break;
 		}
 	}
 
@@ -76,7 +80,9 @@ function tileGrid() {
 	this.W; //horizontal dimension of grid
 	this.H; //vertical dimension of grid
 	this.edges; // stores arrays of indexes for the neighbors of a given index.
-	this.next; 
+	this.next; // array of indexes for the next index on the path to the goal.
+	this.mobLocs // array of indexes containing mobs.
+	this.count = 0;
 
 	//setup the tile grid
 	this.init = function(W,H) {
@@ -85,6 +91,9 @@ function tileGrid() {
 		delete this.grid;
 		this.grid = new Array();
 		this.edges = new Array();
+		this.next = new Array();
+		this.walkable = new Array();
+		this.mobLocs = new Array();
 
 		for(var x = 0; x < W; x++) {
 			for(var y = 0; y < H; y++) {
@@ -95,18 +104,27 @@ function tileGrid() {
 				//get the type from the initial map & set the start and goal locations
 				var type = initialMap[index];
 				switch(type) {
+					case 0:
+					this.walkable[index] = true;
+					break;
+					case 1:
+					this.walkable[index] = false;
+					break;
 					case 2:
 					this.start = index;
+					this.walkable[index] = true;
 					//type = 0;
 					break;
 					case 3:
 					this.goal = index;
+					this.walkable[index] = true;
+					case 4:
+					this.walkable[index] = false;
 					//type = 0;
 					break;
 				}
 				//initialize the tile telling it where it is and what type it is
 				this.grid[index].init([x,y], type);
-
 				//populate the neighbors array
 				this.edges[index] = new Array();
 				for (var i = DIRS.length - 1; i >= 0; i--) {
@@ -128,12 +146,20 @@ function tileGrid() {
 		}
 	}
 
+	this.update = function(dt) {
+		this.count+= dt;
+		if (this.count >= .5) {
+			this.mobLocs.splice(0,this.mobLocs.length);
+			this.count = 0;
+		}
+	}
+
 	this.valid = function(x,y) { return 0 <= x && x < this.W && 0 <= y && y < this.H; }
 	this.to_index = function(x,y) {	return x + this.W * y; }
 	this.from_index = function(index) {	return [index % this.W, Math.floor(index/this.W)]; }
 
 	//recalculate all the next pointers
-	this.recalcPaths = function() {
+	/*this.recalcPaths = function() {
 		delete this.next;
 		this.next = new Array();
 		var frontier = new Array();
@@ -152,6 +178,10 @@ function tileGrid() {
 				}
 			}
 		}
+	}*/
+	this.recalcPaths = function() {
+		delete this.next;
+		this.next = calcPaths(this.walkable, this.goal, this.edges);
 	}
 
 	//return x/y pair for next from xy pair
@@ -166,10 +196,13 @@ function tileGrid() {
 	this.getNext = function(xy) {
 		//if we're on the map
 		if(this.valid(xy[0],xy[1])) {
-			return this.from_index(this.next[this.to_index(xy[0],xy[1])]);
+			var index = this.to_index(xy[0],xy[1]);
+			this.mobLocs[index] = true;
+			this.mobLocs[this.next[index]];
+			return this.from_index(this.next[index]);
 		}
 		//have we made it on the map yet?
-		if(xy[0] < 0) {
+		if(xy[0] < 0.1) {
 			return this.from_index(this.start);
 		}
 		//we're at goal
@@ -177,6 +210,22 @@ function tileGrid() {
 	}
 
 	this.setWalkable = function(tile) {
-		this.grid[this.to_index(tile[0],tile[1])].walkable = false;
+		var index = this.to_index(tile[0],tile[1]);
+		this.grid[index].walkable = false;
+		this.walkable[index] = false;
+	}
+
+	this.testTower = function(towerLoc) {
+		var index = this.to_index(towerLoc[0],towerLoc[1]);
+		if(this.mobLocs[index]) {
+			return false;
+		}
+		var test = testTower (this.walkable, this.goal, this.edges, index, this.start, this.mobLocs)
+		return test;
+	}
+
+	this.hightlight = function(xy) {
+		var valid = testTower(xy);
+		this.grid[to_index(xy[0],xy[1])].highlight(valid);
 	}
 }

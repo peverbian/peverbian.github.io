@@ -6,6 +6,7 @@ function towerClass() {
 	this.shots = new Array();
 	this.range = 100;
 	this.dir;
+	this.wallColor;
 
 	this.init = function(tile) {
 		this.pos = tileToPos(tile);
