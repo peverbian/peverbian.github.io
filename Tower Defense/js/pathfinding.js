@@ -31,20 +31,19 @@ function calcPaths(walkable, goal, neighbors) {
 	return next;
 }
 
-function testTower (walkable, goal, neighbors, towerIndex, start, mobLocs) {
+function testTower (walkable, goal, neighbors, tower, start, mobLocs) {
 	var testWalkable = walkable.slice();
-	testWalkable[towerIndex] = false;
+	for (var i = tower.length - 1; i >= 0; i--) {
+		testWalkable[tower[i]] = false;
+	}
 	var testNext = calcPaths(testWalkable, goal, neighbors);
 	if(!testNext[start]) {
 		return false
 	}
-	console.log("can path to start")
 	for(var i = 0; i < mobLocs.length; i++) {
 		if(mobLocs[i] && !testNext[i]) {
-			console.log(tiles.from_index(i) + "," + mobLocs[i] + "," + testNext[i])
 			return false;
 		}
 	}
-	console.log("no mobs blocking")
 	return true;
 }

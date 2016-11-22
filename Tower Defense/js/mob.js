@@ -4,7 +4,7 @@ function mobClass() {
 	this.pos = new Vector2d();
 	this.dir = new Vector2d(1,0);
 	this.goal = new Vector2d();
-	this.timeToLive = 10;
+	this.timeToLive = 2;
 	this.HP;
 	this.waypoints = new Array();
 	this.state;
@@ -56,13 +56,16 @@ function mobClass() {
 			this.state = "escaping";
 	//		console.log("getting off path");
 			this.navigate = this.escapePath;
-			this.timeToLive = 3;
+			this.timeToLive = 1;
 			this.dir = new Vector2d(1,0);
 		}
 	}
 	
 	this.escapePath = function(dt) {
 		this.timeToLive -= dt;
+		if(this.timeToLive <= 0) {
+			mobEscape();
+		}
 	}
 
 	this.move = function(dt) {

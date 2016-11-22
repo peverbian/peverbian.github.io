@@ -1,4 +1,4 @@
-var TILE_SIZE = 32;
+var TILE_SIZE = 25;
 
 const GROUND = 0;
 const WALL1 = 1;

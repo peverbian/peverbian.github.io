@@ -8,6 +8,7 @@ var mobSpawnRate = 2;
 var playing = false;
 var towers = new Array();
 var tiles;
+var score;
 
 window.onload = function() {
 	canvas = document.getElementById('gameCanvas');
@@ -22,7 +23,6 @@ function startGame() {
 	playing = true;
 	resizeCanvas();
 	setupInput();
-	console.log("entering main loop");
 	setup();
 	mainLoop();
 }
@@ -73,6 +73,7 @@ function setup() {
 	tiles = new tileGrid();
 	tiles.init(25,17);
 	then = Date.now();
+	score = 20;
 
 }
 
@@ -109,4 +110,13 @@ function spawnTower(pos) {
 	   		mobs[i].recalcWaypoints();
 	   	}
 	}
+}
+
+function mobEscape() {
+	score --;
+	updateDiv("health", score);
+}
+
+function updateDiv(div, value) {
+	document.getElementById(div).innerHTML = value;
 }
