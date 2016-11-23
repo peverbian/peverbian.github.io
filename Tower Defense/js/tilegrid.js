@@ -210,17 +210,39 @@ function tileGrid() {
 	}
 
 	this.setWalkable = function(tile) {
-		var index = this.to_index(tile[0],tile[1]);
-		this.grid[index].walkable = false;
-		this.walkable[index] = false;
+		this.grid[tile].walkable = false;
+		this.walkable[tile] = false;
+	}
+
+	this.spawnTower = function(tile, size) {
+		var testTiles = new Array();
+		var index = 0;
+		for (var i = 0; i < size; i++) {
+			for (var j = 0; j < size; j++) {
+				testTiles[index] = this.to_index(tile[0]+i,tile[1]+j);
+				index++;
+			}
+		}
+		if(this.testTower(testTiles)) {
+			console.log(testTiles);
+			for (var i = testTiles.length - 1; i >= 0; i--) {
+				this.setWalkable(testTiles[i]);
+			}
+			this.recalcPaths();
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	this.testTower = function(towerLoc) {
-		var index = this.to_index(towerLoc[0],towerLoc[1]);
-		if(this.mobLocs[index]) {
-			return false;
+		for (var i = towerLoc.length - 1; i >= 0; i--) {
+			if(this.mobLocs[towerLoc[i]]) {
+				return false;
+			}
 		}
-		var test = testTower (this.walkable, this.goal, this.edges, index, this.start, this.mobLocs)
+		var test = testTower (this.walkable, this.goal, this.edges, towerLoc, this.start, this.mobLocs)
 		return test;
 	}
 

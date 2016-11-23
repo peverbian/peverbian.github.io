@@ -91,21 +91,25 @@ function posToTile(pos) {
 }
 
 //returns XY of center of tile.
-function tileToPos(xy) {
+function tileToPosCenter(xy) {
 	var x = (xy[0] * TILE_SIZE) + TILE_SIZE/2;
 	var y = (xy[1] * TILE_SIZE) + TILE_SIZE/2;
+	return new Vector2d(x,y);
+}
+
+function tileToPos(xy) {
+	var x = (xy[0] * TILE_SIZE);
+	var y = (xy[1] * TILE_SIZE);
 	return new Vector2d(x,y);
 }
 
 
 function spawnTower(pos) {
 	var tile = posToTile(pos);
-	if(tiles.testTower(tile)) {
+	if(tiles.spawnTower(tile, 2)) {
 		var newTower = new towerClass();
-	   	newTower.init(tile);
-	   	tiles.setWalkable(tile);
+	   	newTower.init(tile, size);
 	   	towers.push(newTower);
-	   	tiles.recalcPaths();
 	   	for (var i = mobs.length - 1; i >= 0; i--) {
 	   		mobs[i].recalcWaypoints();
 	   	}
@@ -117,6 +121,3 @@ function mobEscape() {
 	updateDiv("health", score);
 }
 
-function updateDiv(div, value) {
-	document.getElementById(div).innerHTML = value;
-}

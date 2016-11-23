@@ -52,7 +52,7 @@ function towerClass() {
 	}
 
 	this.draw = function() {
-		drawBitmap(towerBase, this.pos.x - TILE_SIZE/2, this.pos.y - TILE_SIZE/2);
+		drawBitmapStretched(towerBase, this.pos.x - TILE_SIZE/2, this.pos.y - TILE_SIZE/2, TILE_SIZE*2, TILE_SIZE*2);
 		for (var i = this.shots.length - 1; i >= 0; i--) {
 			this.shots[i].draw();
 		}
@@ -61,6 +61,6 @@ function towerClass() {
 			this.dir = this.target.pos.subtract(this.pos);
 			this.dir = this.dir.toAngles();
 		}
-		drawBitmapCenteredWithRotation(basicTop, this.pos.x, this.pos.y, this.dir);
+		drawBitmapCenteredStretchedWithRotation(basicTop, this.pos.x+ TILE_SIZE/2, this.pos.y + TILE_SIZE/2, TILE_SIZE*2, TILE_SIZE*2, this.dir);
 	}
 }
