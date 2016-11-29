@@ -8,7 +8,9 @@ var mobSpawnRate = 2;
 var playing = false;
 var towers = new Array();
 var tiles;
+var lives;
 var score;
+var wave = 0;
 
 window.onload = function() {
 	canvas = document.getElementById('gameCanvas');
@@ -43,8 +45,9 @@ function updateEverything(dt) {
 	tiles.update(dt);
 	if(mobSpawnDelay >= mobSpawnRate) {
 		mobSpawnDelay=0;
+		wave++;
 		var newMob = new mobClass();
-		newMob.init(tiles.getStart(), tiles.getGoal());
+		newMob.init(tiles.getStart(), tiles.getGoal(),wave);
 		mobs.push(newMob);
 	}
 	for (var i = mobs.length - 1; i >= 0; i--) {
@@ -73,7 +76,8 @@ function setup() {
 	tiles = new tileGrid();
 	tiles.init(25,17);
 	then = Date.now();
-	score = 20;
+	score = 0;
+	lives = 20;
 
 }
 
@@ -91,16 +95,23 @@ function posToTile(pos) {
 }
 
 //returns XY of center of tile.
-function tileToPosCenter(xy) {
+function tileToPosCenter2d(xy) {
 	var x = (xy[0] * TILE_SIZE) + TILE_SIZE/2;
 	var y = (xy[1] * TILE_SIZE) + TILE_SIZE/2;
 	return new Vector2d(x,y);
 }
 
-function tileToPos(xy) {
+function tileToPos2d(xy) {
 	var x = (xy[0] * TILE_SIZE);
 	var y = (xy[1] * TILE_SIZE);
 	return new Vector2d(x,y);
+}
+
+//returns XY of top-left of tile.
+function tileToPos(xy) {
+	var x = (xy[0] * TILE_SIZE);
+	var y = (xy[1] * TILE_SIZE);
+	return [x,y];
 }
 
 
@@ -108,7 +119,7 @@ function spawnTower(pos) {
 	var tile = posToTile(pos);
 	if(tiles.spawnTower(tile, 2)) {
 		var newTower = new towerClass();
-	   	newTower.init(tile, size);
+	   	newTower.init(tile, 2);
 	   	towers.push(newTower);
 	   	for (var i = mobs.length - 1; i >= 0; i--) {
 	   		mobs[i].recalcWaypoints();
@@ -117,7 +128,7 @@ function spawnTower(pos) {
 }
 
 function mobEscape() {
-	score --;
-	updateDiv("health", score);
+	lives--;
+	updateDiv("health", lives);
 }
 

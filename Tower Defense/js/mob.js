@@ -10,12 +10,12 @@ function mobClass() {
 	this.state;
 
 
-	this.init = function(start, goal) {
-		this.pos = tileToPos(start);
+	this.init = function(start, goal,hp) {
+		this.pos = tileToPosCenter2d(start);
 		this.pos.x -= 100;
-		this.goal = tileToPos(goal);
-		this.HP = 2500;
-		this.waypoints.push(tileToPos(tiles.getNext(start)));
+		this.goal = tileToPosCenter2d(goal);
+		this.HP = hp;
+		this.waypoints.push(tileToPosCenter2d(tiles.getNext(start)));
 		this.state = "starting";
 		this.navigate = this.startingPath;
 
@@ -42,7 +42,7 @@ function mobClass() {
 		if(this.waypoints[0]) {
 			this.dir = this.waypoints[0].subtract(this.pos);
 			if(this.dir.lengthSqr() < TILE_SIZE/2) {
-				this.waypoints.push(tileToPos(tiles.getNext(posToTile(this.pos))));
+				this.waypoints.push(tileToPosCenter2d(tiles.getNext(posToTile(this.pos))));
 				this.waypoints.shift();
 			}
 		}
@@ -78,14 +78,16 @@ function mobClass() {
 
 	this.hit = function(damage) {
 		this.HP -= damage;
-		if(this.HP <= 0) {
+		if(this.HP <= 0 && this.timeToLive > 0) {
+			score++;
+			updateDiv("score", score);
 			this.timeToLive = 0;
 		}	
 	}
 
 	this.recalcWaypoints = function() {
 		this.waypoints.splice(0, this.waypoints.length);
-		this.waypoints.push(tileToPos(tiles.getNext(posToTile(this.pos))));
+		this.waypoints.push(tileToPosCenter2d(tiles.getNext(posToTile(this.pos))));
 	}
 
 	this.draw = function() {

@@ -34,6 +34,9 @@ function calcPaths(walkable, goal, neighbors) {
 function testTower (walkable, goal, neighbors, tower, start, mobLocs) {
 	var testWalkable = walkable.slice();
 	for (var i = tower.length - 1; i >= 0; i--) {
+		if(!testWalkable[tower[i]]) {
+			return false;
+		}
 		testWalkable[tower[i]] = false;
 	}
 	var testNext = calcPaths(testWalkable, goal, neighbors);
