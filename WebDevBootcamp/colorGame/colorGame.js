@@ -26,6 +26,7 @@ function getElements() {
 	resetButton = document.querySelector("#reset");
 	modeButtons = document.querySelectorAll(".mode");	
 }
+
 function setEventListeners() {
 	//set listeners for the mode buttons
 	for (var i = 0; i < modeButtons.length; i++) {
@@ -41,7 +42,7 @@ function setEventListeners() {
 
 	//reset button
 	resetButton.addEventListener("click", reset);
-
+	
 	//set listeners for the squares
 	for (var i = squares.length - 1; i >= 0; i--) {
 		squares[i].addEventListener("click", function() {
