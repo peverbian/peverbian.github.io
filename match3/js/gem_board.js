@@ -184,7 +184,7 @@ function gemBoard() {
 			this.level += 1;
 			this.chanceForDouble += 0.05;
 			this.pointsToNextLevel += 50;
-			this.trashes += 1 + Math.floor(this.level/2);
+			this.trashes += Math.min((1 + Math.floor(this.level/2)),5);
 		}		
 	}
 
